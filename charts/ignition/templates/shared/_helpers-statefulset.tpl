@@ -164,7 +164,7 @@ spec:
                   name: {{ $.spec.adminSecret }}
                   key: username
             - name: GATEWAY_ADMIN_PASSWORD_FILE
-              value: /run/secrets/gateway-password
+              value: /run/secrets/ignition/gateway-password
             - name: IGNITION_EDITION
               value: {{ $.spec.edition | default "standard" }}
             - name: TZ
@@ -211,8 +211,11 @@ spec:
             {{- toYaml . | nindent 12 }}
           {{- end }}
           volumeMounts:
+            {{/* Secretes get mounted RO. Don't use /run/secrets because it will cause other issues
+                 https://github.com/kubernetes/kubernetes/issues/65835#issuecomment-577681140 
+            */}}
             - name: gateway-password
-              mountPath: /run/secrets/
+              mountPath: /run/secrets/ignition/
             {{- if and $.spec.recovery.enabled }}
             - name: {{ $.spec.recovery.volume.name }}
               mountPath: {{ $.spec.recovery.volume.mountPath }}
