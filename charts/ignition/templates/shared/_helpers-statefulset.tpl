@@ -136,18 +136,16 @@ spec:
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+      {{- with $.spec.podSecurityContext }}
       securityContext:
-        {{- toYaml $.spec.podSecurityContext | nindent 8 }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       {{- with $.spec.initContainers }}
       initContainers:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       containers:
         - name: {{ $.root.Chart.Name }}
-          {{- with $.spec.containerSecurityContext }}
-          securityContext:
-            {{- toYaml $.spec.containerSecurityContext | nindent 12 }}
-          {{- end }}
           image: "{{ $.spec.image.repository }}:{{ $.spec.image.tag | default $.root.Chart.AppVersion }}"
           imagePullPolicy: {{ $.spec.image.pullPolicy }}
           env:
@@ -172,6 +170,12 @@ spec:
             {{- if and $.spec.recovery.enabled $.spec.recovery.restore.enabled }}
             - name: GATEWAY_RESTORE_DISABLED
               value: false
+            {{- end }}
+            {{- if $.spec.podSecurityContext.runAsNonRoot }}
+            - name: IGNITION_UID
+              value: {{ $.spec.podSecurityContext.runAsUser | default 1000 }}
+            - name: IGNITION_GID
+              value: {{ $.spec.podSecurityContext.runAsGroup | default 1000 }}
             {{- end }}
             {{- if $.spec.extraEnv }}
             {{- toYaml $.spec.extraEnv | nindent 12 }}

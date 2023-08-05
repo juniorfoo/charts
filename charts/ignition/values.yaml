@@ -272,16 +272,6 @@ defaultSpec: &defaultSpec
   ##
   annotations: {}
 
-  ## ContainerSecurityContext holds container-level security attributes and inherits/overrides
-  ## from PodSecurityContext.
-  ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/
-  ##
-  containerSecurityContext: {}
-    # capabilities:
-    #   drop:
-    #   - ALL
-    # readOnlyRootFilesystem: true
-
   ## Enable debug mode, applicable to development - attaches port 8000 for remote JVM debugging.  Port 8000 will also 
   ## likely need to be published on the container.
   ##
@@ -380,16 +370,18 @@ defaultSpec: &defaultSpec
   podAntiAffinityTopologyKey: kubernetes.io/hostname
 
   ## PodSecurityContext holds pod-level security attributes and common container settings.
-  ## This defaults to non root user with uid 1000 and gid 2000. *v1.PodSecurityContext  false
+  ## This defaults to non root user with uid 1000 and gid 1000. *v1.PodSecurityContext
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/
   ##
-  podSecurityContext:
-    runAsGroup: 2000
+  podSecurityContext: &podSecurityContext
+    runAsGroup: 1000
     runAsNonRoot: true
     runAsUser: 1000
-    fsGroup: 2000
+    # fsGroup: 2000
     seccompProfile:
       type: RuntimeDefault
+    readOnlyRootFilesystem: true
+    allowPrivilegeEscalation: false
 
   ## Priority class assigned to the Pods
   ##
