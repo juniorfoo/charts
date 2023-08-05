@@ -150,9 +150,6 @@ spec:
           {{- end }}
           image: "{{ $.spec.image.repository }}:{{ $.spec.image.tag | default $.root.Chart.AppVersion }}"
           imagePullPolicy: {{ $.spec.image.pullPolicy }}
-          volumeMounts:
-            - name: gateway-password
-              mountPath: "/run/secrets/"
           env:
             - name: POD_IP
               valueFrom:
@@ -213,7 +210,7 @@ spec:
             {{- toYaml $.spec.resources | nindent 12 }}
           volumeMounts:
             - name: gateway-password
-              mountPath: /run/secrets/gateway-password
+              mountPath: /run/secrets/
             {{- if and $.spec.recovery.enabled }}
             - name: {{ $.spec.recovery.volume.name }}
               mountPath: {{ $.spec.recovery.volume.mountPath }}
@@ -236,6 +233,7 @@ spec:
             secretName: {{ $.spec.adminSecret }}
             items:
               - key: password
+                path: gateway-password
         {{- if and $.spec.recovery.enabled }}
         - name: {{ $.spec.recovery.volume.name }}
           persistentVolumeClaim:

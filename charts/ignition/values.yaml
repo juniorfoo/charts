@@ -24,7 +24,7 @@ hub:
     ## Must be provided if Ingress is enable
     ##
     hosts:
-      - ignition-hub test.exmple.com
+      - ignition-hub-test.exmple.com
   env: []
 
 ## Spoke definitions/settings - zero or more
