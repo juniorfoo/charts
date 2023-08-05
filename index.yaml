@@ -2,6 +2,22 @@ apiVersion: v1
 entries:
   ignition:
   - apiVersion: v2
+    appVersion: 8.1.30
+    created: "2023-08-05T17:35:04.701396899Z"
+    description: Helm chart for running a scale-out version of Ignition 8.1 from Inductive
+      Automation.
+    digest: 91e37decfc12b74a3902a040fdd5b4b779a587502eaca59448f0e5275fe8d676
+    icon: https://docs.inductiveautomation.com/download/attachments/58591566/IgnitionUserManualLogo-8.1.png?version=1&modificationDate=1605544080000&api=v2
+    maintainers:
+    - name: juniorfoo
+    name: ignition
+    sources:
+    - https://docs.inductiveautomation.com/display/DOC81/Docker+Image
+    - https://github.com/juniorfoo/charts/
+    urls:
+    - https://github.com/juniorfoo/charts/releases/download/ignition-8.1.30/ignition-8.1.30.tgz
+    version: 8.1.30
+  - apiVersion: v2
     appVersion: "8.1"
     created: "2023-08-05T17:18:12.415724571Z"
     description: Helm chart for running a scale-out version of Ignition 8.1 from Inductive
@@ -17,4 +33,4 @@ entries:
     urls:
     - https://github.com/juniorfoo/charts/releases/download/ignition-8.1/ignition-8.1.tgz
     version: "8.1"
-generated: "2023-08-05T17:18:12.415738272Z"
+generated: "2023-08-05T17:35:04.701404799Z"
