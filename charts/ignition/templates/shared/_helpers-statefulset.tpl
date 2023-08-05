@@ -206,8 +206,10 @@ spec:
             {{- toYaml $.spec.livenessProbe | nindent 12 }}
           readinessProbe:
             {{- toYaml $.spec.readinessProbe | nindent 12 }}
+          {{- with $.spec.resources }}
           resources:
-            {{- toYaml $.spec.resources | nindent 12 }}
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
           volumeMounts:
             - name: gateway-password
               mountPath: /run/secrets/
