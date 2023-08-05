@@ -7,6 +7,11 @@
 ## Settings that will be used most often
 ##
 
+## Accept the Ignition EULA
+## ref: https://inductiveautomation.com/ignition/license
+##
+acceptEula: false
+
 ## Enable debug mode, applicable to development - attaches port 8000 for remote JVM debugging.  Port 8000 will also 
 ## likely need to be published on the container.
 ##
@@ -253,11 +258,7 @@ topologySpreadConstraints: []
 
 ## Default Spec settings for Hub an Spoke(s)
 defaultSpec: &defaultSpec
-  ## Accept the Ignition EULA
-  ## ref: https://inductiveautomation.com/ignition/license
-  ##
-  acceptEula: false
-
+ 
   ## Name of the existing secret which contains the admin username and password
   ##
   adminSecret: ignition-root-info

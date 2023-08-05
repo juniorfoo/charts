@@ -155,7 +155,7 @@ spec:
                   apiVersion: v1
                   fieldPath: status.podIP
             - name: ACCEPT_IGNITION_EULA
-              value: {{ ternary "Y" "N" $.spec.acceptEula | quote }}
+              value: {{ $.root.Values.acceptEula | ternary "Y" "N" | quote }}
             - name: GATEWAY_ADMIN_USERNAME
               valueFrom:
                 secretKeyRef:
