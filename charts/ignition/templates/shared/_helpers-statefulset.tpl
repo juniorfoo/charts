@@ -164,7 +164,7 @@ spec:
             - name: GATEWAY_ADMIN_PASSWORD_FILE
               value: /run/secrets/ignition/gateway-password
             - name: IGNITION_EDITION
-              value: {{ $.spec.edition | default "standard" }}
+              value: {{ $.root.Values.edition | default "standard" }}
             - name: TZ
               value: UTC
             {{- if and $.spec.recovery.enabled $.spec.recovery.restore.enabled }}
@@ -183,7 +183,7 @@ spec:
           args:
             - -n {{ camelcase $.context.name }}
             - -m {{ $.spec.memory.max | default 512 }}
-            {{- if $.spec.debug }}
+            {{- if $.root.Values.debug }}
             - -d
             {{- end }}
             {{- if and $.spec.recovery.enabled $.spec.recovery.restore.enabled }}
@@ -201,7 +201,7 @@ spec:
             - name: {{ $.root.Values.service.portName | default "http-web" }}
               containerPort: {{ $.root.Values.service.targetPort | default 8088 }}
               protocol: TCP
-            {{- if $.spec.debug }}
+            {{- if $.root.Values.debug }}
             - name: debug
               containerPort: 8000
               protocol: TCP

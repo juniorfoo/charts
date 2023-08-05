@@ -7,6 +7,14 @@
 ## Settings that will be used most often
 ##
 
+## Enable debug mode, applicable to development - attaches port 8000 for remote JVM debugging.  Port 8000 will also 
+## likely need to be published on the container.
+##
+debug: false
+
+## Ignition edition (standard, edge, or maker)
+## 
+edition: standard
 
 ## If true, Ignition instance(s) will be created
 ##
@@ -271,15 +279,6 @@ defaultSpec: &defaultSpec
   ## Annotations to be added to the Pod
   ##
   annotations: {}
-
-  ## Enable debug mode, applicable to development - attaches port 8000 for remote JVM debugging.  Port 8000 will also 
-  ## likely need to be published on the container.
-  ##
-  debug: false
-
-  ## Ignition edition (standard, edge, or maker)
-  ## 
-  edition: standard
 
   ## Optionally specify extra command line arguments
   extraArgs:
