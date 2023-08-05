@@ -14,7 +14,7 @@ enabled: true
 
 ## Base Hub settings - there should always be one
 hub:
-  name: hub test
+  name: hub
   ingress:
     ## If true, an Ingress will be created for this hub
     ## 
@@ -282,6 +282,11 @@ defaultSpec: &defaultSpec
     #   - ALL
     # readOnlyRootFilesystem: true
 
+  ## Enable debug mode, applicable to development - attaches port 8000 for remote JVM debugging.  Port 8000 will also 
+  ## likely need to be published on the container.
+  ##
+  debug: false
+
   ## Ignition edition (standard, edge, or maker)
   ## 
   edition: standard
@@ -469,12 +474,6 @@ defaultSpec: &defaultSpec
 hubSpec:
   <<: *defaultSpec
 
-  ## Enable debug mode, applicable to development - attaches port 8000 for remote JVM debugging.  Port 8000 will also 
-  ## likely need to be published on the container.
-  ##
-  debug: false
-
-  ## Ignition Instance Name (e.g., "Hub", "Homelab-Hub")
-  ##
-  name: Hub
-
+## Spoke spec settings
+spokeSpec:
+  <<: *defaultSpec

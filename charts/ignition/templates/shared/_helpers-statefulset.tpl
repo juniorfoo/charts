@@ -180,7 +180,7 @@ spec:
             {{- toYaml $.spec.extraEnv | nindent 12 }}
             {{- end }}
           args:
-            - -n {{ $.spec.name | default (camelcase $.context.name) }}
+            - -n {{ camelcase $.context.name }}
             - -m {{ $.spec.memory.max | default 512 }}
             {{- if $.spec.debug }}
             - -d
