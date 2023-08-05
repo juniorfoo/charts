@@ -1,0 +1,2 @@
+{{ $data := dict "root" . "ingress" .Values.ingress "context" .Values.hub }}
+{{- include "ignition.shared.ingress" $data }}

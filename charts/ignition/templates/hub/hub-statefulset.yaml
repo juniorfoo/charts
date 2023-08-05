@@ -1,0 +1,2 @@
+{{ $data := dict "root" $ "context" .Values.hub "spec" .Values.hubSpec }}
+{{- include "ignition.shared.statefulset" $data }}

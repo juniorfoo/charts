@@ -1,0 +1,480 @@
+# Default values for ignition
+#
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+###################################################################################################
+## Settings that will be used most often
+##
+
+
+## If true, Ignition instance(s) will be created
+##
+enabled: true
+
+## Base Hub settings - there should always be one
+hub:
+  name: hub test
+  ingress:
+    ## If true, an Ingress will be created for this hub
+    ## 
+    enabled: true
+
+    ## Hostnames
+    ## Must be provided if Ingress is enable
+    ##
+    hosts:
+      - ignition-hub test.exmple.com
+  env: []
+
+## Spoke definitions/settings - zero or more
+## See Hub settings above for descriptions of each setting/value
+##
+spokes:
+  - name: spoke-electrical
+    ingress:
+      enabled: true
+      hosts:
+        - ignition-electrical.example.com
+    env: []
+  - name: spoke-environmental
+    ingress:
+      enabled: true
+      hosts:
+        - ignition-environmental.example.com
+    env: []
+
+###################################################################################################
+## Other settings that may be overridden 
+##
+
+## Annotations for Ignition
+##
+annotations: {}
+
+## Labels to apply to all resources
+##
+commonLabels: {}
+# aaa: abc123
+# bbb: 123abc
+
+dnsConfig: {}
+  # nameservers:
+  #   - 1.2.3.4
+  # searches:
+  #   - ns1.svc.cluster-domain.example
+  #   - my.dns.search.suffix
+  # options:
+  #   - name: ndots
+  #     value: "2"
+  #   - name: edns0
+
+## Provide a name to substitute for the full names of resources
+##
+fullnameOverride: ""
+
+hostAliases: []
+  # - ip: "127.0.0.1"
+  #   hostnames:
+  #   - "foo.local"
+  #   - "bar.local"
+  # - ip: "10.1.2.3"
+  #   hostnames:
+  #   - "foo.remote"
+  #   - "bar.remote"
+
+## Global image registry to use if it needs to be overriden for some specific use cases (e.g local registries, 
+## custom images, ...)
+##
+imageRegistry: ""
+
+## Reference to one or more secrets to be used when pulling images
+## ref: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
+##
+imagePullSecrets: []
+# - name: "image-pull-secret"
+# or
+# - "image-pull-secret"
+
+## Ingress - uses letsencrypt
+##
+ingress:
+  ## If true, Ingress will be created
+  ##
+  enabled: true
+
+  ## IngressClassName for Ingress. Should be provided if Ingress is enable
+  ##
+  ingressClassName: nginx
+
+  ## Annotations for Ingress
+  ##
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-staging
+    hajimari.io/icon: monitor-dashboard
+
+  ## Labels to be added to the Ingress
+  ##
+  labels: {}
+
+## Provide a k8s version to auto dashboard import script example: kubeTargetVersionOverride: 1.26
+##
+kubeTargetVersionOverride: ""
+
+## Allow kubeVersion to be overridden while creating the Ingress
+##
+kubeVersionOverride: ""
+
+## Provide a name in place of ignition for `name:` labels
+##
+nameOverride: ""
+
+## Override the deployment namespace
+##
+namespaceOverride: ""
+
+## Configure pod disruption budgets for the instance(s)
+## ref: https://kubernetes.io/docs/tasks/run-application/configure-pdb/#specifying-a-poddisruptionbudget
+## This configuration is immutable once created and will require the PDB to be deleted to be changed
+## https://github.com/kubernetes/kubernetes/issues/45398
+##
+podDisruptionBudget:
+  enabled: true
+  minAvailable: 1
+  maxUnavailable: ""
+
+## Expose the Ignition service to be accessed from outside the cluster (LoadBalancer service).
+## or access it from within the cluster (ClusterIP service). Set the service type and the port to serve it.
+## ref: http://kubernetes.io/docs/user-guide/services/
+##
+service:
+
+  ## If true, Ignition Service will be created
+  ##
+  enabled: true
+
+  ## Service type
+  ##
+  type: ClusterIP
+
+  ## IP address to use
+  ## - Empty means that an IP address will be assigned from the pool
+  ## - None means that an IP will not be assigned    
+  clusterIP: ""
+
+  ## List of IP addresses at which the Ignition service is available
+  ## Ref: https://kubernetes.io/docs/user-guide/services/#external-ips
+  ##
+  externalIPs: []
+
+  ## Loadbalancer IP
+  ## Only use if service.type is "LoadBalancer"
+  loadBalancerIP: ""
+  loadBalancerSourceRanges: []
+
+  ## Denotes if this Service desires to route external traffic to node-local or cluster-wide endpoints
+  ##
+  externalTrafficPolicy: Cluster
+
+  ## Port for Ignition Service to listen on
+  ##
+  port: 8088
+
+  ## Port name for Ignition Service
+  ##
+  portName: &portName http-web
+
+  ## Port on the Pod
+  ##
+  targetPort: 8088
+
+  ## Port to expose on each node
+  ## Only used if service.type is 'NodePort'
+  ##
+  nodePort: 38088
+
+  ## Additional ports to open for Ignition Service
+  ##
+  additionalPorts: []
+  # additionalPorts:
+  # - name: https-web
+  #   port: 8043
+  #   targetPort: 8043
+
+  ## Annotations for Ignition Service
+  ##
+  annotations: {}
+
+  ## Labels for Ignition Service
+  ##
+  labels: {}
+
+  ## Adds the appProtocol field to the service. This allows to work with istio protocol selection. 
+  ## Ex: "http" or "tcp"
+  ##
+  appProtocol: "http"
+
+  ## If you want to make sure that connections from a particular client are passed to the same Pod each time
+  ## Accepts 'ClientIP' or ''
+  ##
+  sessionAffinity: "ClientIP"
+
+## Service account to use
+## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-service-account/
+##
+serviceAccount:
+  create: true
+  name: ""
+  annotations: {}
+  labels: {}
+  automountServiceAccountToken: true
+
+## Topology spread constraints rely on node labels to identify the topology domain(s) that each Node is in.
+## Ref: https://kubernetes.io/docs/concepts/workloads/pods/pod-topology-spread-constraints/
+topologySpreadConstraints: []
+  # - maxSkew: 1
+  #   topologyKey: topology.kubernetes.io/zone
+  #   whenUnsatisfiable: DoNotSchedule
+  #   labelSelector:
+  #     matchLabels:
+  #       app.kubernetes.io/instance: xyz
+
+###################################################################################################
+## Specifications for Hub and Spoke(s). Shared items are in defaultSpec 
+##
+
+## Default Spec settings for Hub an Spoke(s)
+defaultSpec: &defaultSpec
+  ## Accept the Ignition EULA
+  ## ref: https://inductiveautomation.com/ignition/license
+  ##
+  acceptEula: false
+
+  ## Name of the existing secret which contains the admin username and password
+  ##
+  adminSecret: ignition-root-info
+
+  ## Affinity rules for the instance
+  ## ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/
+  ## Note: In the following types, IgnoredDuringExecution means that if the node labels change 
+  ##       after Kubernetes schedules the Pod, the Pod continues to run.
+  ##
+  affinity: {}
+  #   nodeAffinity:
+  #     requiredDuringSchedulingIgnoredDuringExecution:
+  #       nodeSelectorTerms:
+  #         - matchExpressions:
+  #           - key: "disktype"
+  #             operator: In
+  #             values: ["ssd"]
+
+  ## Annotations to be added to the Pod
+  ##
+  annotations: {}
+
+  ## ContainerSecurityContext holds container-level security attributes and inherits/overrides
+  ## from PodSecurityContext.
+  ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/
+  ##
+  containerSecurityContext: {}
+    # capabilities:
+    #   drop:
+    #   - ALL
+    # readOnlyRootFilesystem: true
+
+  ## Ignition edition (standard, edge, or maker)
+  ## 
+  edition: standard
+
+  ## Optionally specify extra command line arguments
+  extraArgs:
+    - -XX:MaxGCPauseMillis=200
+
+  ## Optionally specify extra environment variables to add to the Ignition containers
+  extraEnv: []
+    # - name: FOO
+    #   value: BAR
+
+  ## Additional Secret mounts
+  ## Secrets must be manually created in the namespace but we will automatically create the volumes
+  extraSecretMounts: []
+    # - name: secret-files
+    #   mountPath: /etc/secrets
+    #   subPath: ""
+    #   secretName: ignition-super-secret-files
+    #   readOnly: true
+
+  ## Additional Volume mounts (always assumes PVC)
+  ## 
+  extraVolumeMounts: []
+    # - name: example-pvc
+    #   mountPath: /mnt/pvc
+    #   subPath: ""
+    #   readOnly: true
+    #   claimName: claim-name
+
+  ## Image for Ignition
+  ##
+  image:
+    # -- The Docker registry
+    registry: docker.io
+    # -- Docker image repository
+    repository: inductiveautomation/ignition
+    # -- Overrides the image tag whose default is the chart's appVersion
+    tag: ""
+    # -- Overrides the image tag with an image digest
+    digest: null
+    # -- Docker image pull policy
+    pullPolicy: IfNotPresent
+
+  ## InitContainers allows injecting additional initContainers. This is meant to allow doing some changes
+  ## (permissions, dir tree) on mounted volumes before starting the instance
+  initContainers: []
+
+  ## Labels to be added to the Pod
+  ##
+  labels: {}
+
+  ## Pod liveness probe
+  ##
+  livenessProbe:
+    httpGet:
+      path: /
+      port: *portName
+
+  ## Ignition JVM Memory (MB)
+  ##
+  memory:
+    min: 256
+    max: 512
+
+  ## Allowed architecture of Nodes that the Pods can be scheduled on. If this is an empty set
+  ## then no restrictions will be created. Since this is a Java process it will run on amd64 and
+  ## arm64.
+  ##
+  nodeArchitecture:
+    - amd64
+    - arm64
+
+  ## Define which Nodes the Pod(s) are scheduled on.
+  ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#nodeselector
+  ##
+  nodeSelector: {}
+
+  ## Pod anti-affinity can prevent the scheduler from placing Alertmanager replicas on the same node.
+  ## - The default value "soft" means that the scheduler should *prefer* to not schedule two replica pods onto the 
+  ##   same node but no guarantee is provided.
+  ## - The value "hard" means that the scheduler is *required* to not schedule two replica pods onto the same node.
+  ## - The value "" will disable pod anti-affinity so that no anti-affinity rules will be configured.
+  ##
+  podAntiAffinity: "hard"
+
+  ## If anti-affinity is enabled sets the topologyKey to use for anti-affinity.
+  ## This can be changed to, for example, topology.kubernetes.io/zone
+  ##
+  podAntiAffinityTopologyKey: kubernetes.io/hostname
+
+  ## PodSecurityContext holds pod-level security attributes and common container settings.
+  ## This defaults to non root user with uid 1000 and gid 2000. *v1.PodSecurityContext  false
+  ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/
+  ##
+  podSecurityContext:
+    runAsGroup: 2000
+    runAsNonRoot: true
+    runAsUser: 1000
+    fsGroup: 2000
+    seccompProfile:
+      type: RuntimeDefault
+
+  ## Priority class assigned to the Pods
+  ##
+  priorityClassName: ""
+
+  ## Metadata for our created Pods.
+  ## More info: https://github.com/kubernetes/community/blob/master/contributors/devel/sig-architecture/api-conventions.md#metadata
+  ## Metadata Labels and Annotations gets propagated to the Ignition pods.
+  ##
+  #podMetadata: {}
+
+  ## Pod readiness probe
+  ##
+  readinessProbe:
+    httpGet:
+      path: /
+      port: *portName
+
+  ## Recovery settings
+  ## If true, `volume.name` must be an existing PVC. It will be mounted to `volume.mountPath`.
+  ## Ignition application should then be configured to backup nightly to `<mountPath>/<instanceName>/...`
+  ## 
+  ## If `restore.enabled` is true, we will initiate a restore from `volume.path` within the mount.
+  ## Note: The gateway restore will only apply on a fresh gateway launch. Subsequent restarts of 
+  ## the container will not restore the indicated gateway backup.
+  ##
+  recovery: {}
+
+  ## How many instances will be created. Since each hub or spoke has different configs, this should
+  ## always be 1. 
+  ##
+  replicas: 1
+
+  ## Resource requests and limits
+  ##
+  resources:
+    # We usually recommend not to specify default resources and to leave this as a conscious
+    # choice for the user. This also increases chances charts run on environments with little
+    # resources, such as Minikube. If you do want to specify resources, uncomment the following
+    # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+    # limits:
+    #   cpu: 100m
+    #   memory: 128Mi
+    # requests:
+    #   cpu: '4'
+    #   memory: 4Gi
+
+  ## Storage configuration for the Ignition instance(s)
+  ## ref: https://kubernetes.io/docs/concepts/storage/persistent-volumes/#access-modes
+  ##
+  persistence:
+    enabled: true
+    ## Persistent Volume Storage Class
+    ## If defined, storageClassName: <storageClass>
+    ## If set to "-", storageClassName: "", which disables dynamic provisioning
+    ## If undefined (the default) or set to null, no storageClassName spec is set choosing the
+    ## default provisioner.
+    ##
+    # storageClass: "synology-csi-retain"
+    # storageClass: "-"
+    accessModes:
+      - ReadWriteOnce
+    size: 10Gi
+    selector: {}
+
+  ## If specified, the pod's tolerations.
+  ## ref: https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/
+  ##
+  tolerations: []
+  # - key: "key"
+  #   operator: "Equal"
+  #   value: "value"
+  #   effect: "NoSchedule"
+
+  ## Allow unsigned modules to run
+  ## Note: For development convenience, you may want to allow unsigned modules. Setting this to 
+  ## true will ensure that `ignition.allowunsignedmodules=true` is provided to the process.
+  ## 
+  unsignedModules: false
+
+## Hub spec settings
+hubSpec:
+  <<: *defaultSpec
+
+  ## Enable debug mode, applicable to development - attaches port 8000 for remote JVM debugging.  Port 8000 will also 
+  ## likely need to be published on the container.
+  ##
+  debug: false
+
+  ## Ignition Instance Name (e.g., "Hub", "Homelab-Hub")
+  ##
+  name: Hub
+

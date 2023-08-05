@@ -1,0 +1,6 @@
+apiVersion: v2
+name: cloudflared
+description: Helm chart to deploy Cloudflare Tunnel
+type: application
+version: 0.4.3
+appVersion: 2022.6.3

@@ -1,0 +1,2 @@
+{{ $data := dict "root" $ "context" .Values.hub }}
+{{- include "ignition.shared.service" $data }}
