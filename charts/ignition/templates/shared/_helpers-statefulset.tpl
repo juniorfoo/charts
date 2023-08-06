@@ -32,6 +32,18 @@ Note:
 {{- define "ignition.shared.statefulset" }}
 {{- if .root.Values.enabled }}
 
+{{ $strippedPSC := $.spec.podSecurityContext }}
+{{ $_ := unset $strippedPSC "runAsNonRoot" }}
+{{ $_ := unset $strippedPSC "runAsUser" }}
+{{ $_ := unset $strippedPSC "runAsGroup" }}
+
+{{- $license_keys:= list }}
+{{- $license_tokens:= list }}
+{{- range $l := $.context.licenses }}
+   {{- $license_keys = append $license_keys $l.key }}
+   {{- $license_tokens = append $license_tokens $l.token }}
+{{- end }}
+
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
@@ -136,7 +148,7 @@ spec:
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- with $.spec.podSecurityContext }}
+      {{- with $strippedPSC }}
       securityContext:
         {{- toYaml . | nindent 8 }}
       {{- end }}
@@ -148,14 +160,26 @@ spec:
         - name: {{ $.root.Chart.Name }}
           image: "{{ $.spec.image.repository }}:{{ $.spec.image.tag | default $.root.Chart.AppVersion }}"
           imagePullPolicy: {{ $.spec.image.pullPolicy }}
+          {{- with $.spec.containerSecurityContext }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
           env:
             - name: POD_IP
               valueFrom:
                 fieldRef:
                   apiVersion: v1
                   fieldPath: status.podIP
+
+            {{- /* Accept the EULA or not */}}
             - name: ACCEPT_IGNITION_EULA
               value: {{ $.root.Values.acceptEula | ternary "Y" "N" | quote }}
+
+            {{- /* Disable quick start - default to false */}}
+            - name: DISABLE_QUICKSTART
+              value: {{ $.root.Values.disableQuickstart | default false }}
+
+            {{- /* Gateway admin user and pass */}}
             - name: GATEWAY_ADMIN_USERNAME
               valueFrom:
                 secretKeyRef:
@@ -163,26 +187,55 @@ spec:
                   key: username
             - name: GATEWAY_ADMIN_PASSWORD_FILE
               value: /run/secrets/ignition/gateway-password
-            - name: IGNITION_EDITION
-              value: {{ $.root.Values.edition | default "standard" }}
-            - name: TZ
-              value: UTC
+
+            {{- /* Gateway port(s) */}}
+            - name: GATEWAY_HTTP_PORT
+              value: {{ $.root.Values.service.targetPort | default 8088 }}
+
+            {{- /* Gateway Modules Enabled / Disabled */}}
+            {{- if or $.context.modules $.spec.modules }}
+            - name: GATEWAY_MODULES_ENABLED
+              value: {{ $.context.modules | default $.spec.modules | join "," }}
+            {{- end }}
+
+            {{- /* Gateway Restore Disabled */}}
             {{- if and $.spec.recovery.enabled $.spec.recovery.restore.enabled }}
             - name: GATEWAY_RESTORE_DISABLED
               value: false
             {{- end }}
+
+            {{- /* Edition - defaulting to standard */}}
+            - name: IGNITION_EDITION
+              value: {{ $.root.Values.edition | default "standard" }}
+
+            {{- /* UID and GID to step down to */}}
             {{- if $.spec.podSecurityContext.runAsNonRoot }}
-            - name: IGNITION_UID
-              value: {{ $.spec.podSecurityContext.runAsUser | default 1000 }}
             - name: IGNITION_GID
-              value: {{ $.spec.podSecurityContext.runAsGroup | default 1000 }}
+              value: {{ $.spec.podSecurityContext.runAsGroup | default 1000 | quote }}
+            - name: IGNITION_UID
+              value: {{ $.spec.podSecurityContext.runAsUser | default 1000 | quote }}
             {{- end }}
+
+            {{- /* License key(s) and tokens */}}
+            {{- with $license_keys }}
+            - name: IGNITION_LICENSE_KEY
+              value: {{ $license_keys | join "," }}
+            {{- end }}
+            {{- with $license_tokens }}
+            - name: IGNITION_ACTIVATION_TOKEN
+              value: {{ $license_tokens | join "," }}
+            {{- end }}
+
+            {{- /* Timezone */}}
+            - name: TZ
+              value: UTC
+
             {{- if $.spec.extraEnv }}
             {{- toYaml $.spec.extraEnv | nindent 12 }}
             {{- end }}
           args:
-            - -n {{ camelcase $.context.name }}
-            - -m {{ $.spec.memory.max | default 512 }}
+            - -n{{ camelcase $.context.name }}
+            - -m{{ $.spec.memory.max | default 512 }}
             {{- if $.root.Values.debug }}
             - -d
             {{- end }}
@@ -193,10 +246,10 @@ spec:
             - wrapper.java.initmemory={{ $.spec.memory.min | default 256 }} 
             {{- if $.spec.unsignedModules }}
             - -Dignition.allowunsignedmodules=false 
-            {{- end }}
-            {{- with $.spec.extraArgs }}
+            {{- end }}            {{- with $.spec.extraArgs }}
             {{- toYaml $.spec.extraArgs | nindent 12 }}
             {{- end }}
+
           ports:
             - name: {{ $.root.Values.service.portName | default "http-web" }}
               containerPort: {{ $.root.Values.service.targetPort | default 8088 }}
@@ -215,7 +268,7 @@ spec:
             {{- toYaml . | nindent 12 }}
           {{- end }}
           volumeMounts:
-            {{/* Secretes get mounted RO. Don't use /run/secrets because it will cause other issues
+            {{- /* Secretes get mounted RO. Don't use /run/secrets because it will cause other issues
                  https://github.com/kubernetes/kubernetes/issues/65835#issuecomment-577681140 
             */}}
             - name: gateway-password

@@ -17,6 +17,11 @@ acceptEula: false
 ##
 debug: false
 
+## Boolean to decide whether or not the "Enable Quick Start" prompt will appear when new Gateway Containers are created.
+## A setting of true will skip the Quick Start prompt.
+## 
+disableQuickstart: false
+
 ## Ignition edition (standard, edge, or maker)
 ## 
 edition: standard
@@ -39,6 +44,22 @@ hub:
     hosts:
       - ignition-hub-test.exmple.com
   env: []
+  ## 8-character license key (XXXX-XXXX) for leased activation (e.g. Maker Edition), used to set value for initial 
+  ## gateway auto-commissioning. You can activate multiple 8-character license keys at the same time in a 
+  ## comma-delimited format, such as: ABCD-1234,DCBA-4321,WXYZ-6789,ZYXW-9876. Changes to this variable will now update 
+  ## the leased activation license configuration after initial commissioning. Previously, they would only be absorbed 
+  ## if an existing leased activation configuration was not present.
+  ## 
+  licenses: []
+    # - key: ABCD-1234
+    #   token: abcdef1234...789
+    # - key: DCBA-4321
+    #   token: bcdef2345...890
+
+
+  ## See comments in hubSpec.
+  ##
+  modules: []
 
 ## Spoke definitions/settings - zero or more
 ## See Hub settings above for descriptions of each setting/value
@@ -50,12 +71,16 @@ spokes:
       hosts:
         - ignition-electrical.example.com
     env: []
+    licenses: []
+    modules: []
   - name: spoke-environmental
     ingress:
       enabled: true
       hosts:
         - ignition-environmental.example.com
     env: []
+    licenses: []
+    modules: []
 
 ###################################################################################################
 ## Other settings that may be overridden 
@@ -123,7 +148,7 @@ ingress:
   ## Annotations for Ingress
   ##
   annotations:
-    cert-manager.io/cluster-issuer: letsencrypt-staging
+    cert-manager.io/cluster-issuer: letsencrypt-prod
     hajimari.io/icon: monitor-dashboard
 
   ## Labels to be added to the Ingress
@@ -281,6 +306,15 @@ defaultSpec: &defaultSpec
   ##
   annotations: {}
 
+  ## Holds container-level security attributes. These are applied in addition to 
+  ## *v1.PodSecurityContext
+  ##
+  containerSecurityContext:
+    allowPrivilegeEscalation: false
+    # readOnlyRootFilesystem: true # Docker image requires a RW file system :/
+    seccompProfile:
+      type: RuntimeDefault
+
   ## Optionally specify extra command line arguments
   extraArgs:
     - -XX:MaxGCPauseMillis=200
@@ -333,9 +367,12 @@ defaultSpec: &defaultSpec
   ## Pod liveness probe
   ##
   livenessProbe:
-    httpGet:
-      path: /
+    # httpGet:
+    #   path: /web/home?0
+    #   port: *portName
+    tcpSocket:
       port: *portName
+    initialDelaySeconds: 60
 
   ## Ignition JVM Memory (MB)
   ##
@@ -373,15 +410,16 @@ defaultSpec: &defaultSpec
   ## This defaults to non root user with uid 1000 and gid 1000. *v1.PodSecurityContext
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/
   ##
-  podSecurityContext: &podSecurityContext
+  ## NOTE: This image requires the container to run as root and then the application will step
+  ##       down to the values below. This Chart therefore does not apply these at the 
+  ##       `spec.template.spec.securityContext` but only at 
+  ##       `spec.template.spec.container[*].securityContext`.
+  ##
+  podSecurityContext:
     runAsGroup: 1000
     runAsNonRoot: true
     runAsUser: 1000
     # fsGroup: 2000
-    seccompProfile:
-      type: RuntimeDefault
-    readOnlyRootFilesystem: true
-    allowPrivilegeEscalation: false
 
   ## Priority class assigned to the Pods
   ##
@@ -396,9 +434,12 @@ defaultSpec: &defaultSpec
   ## Pod readiness probe
   ##
   readinessProbe:
-    httpGet:
-      path: /
+    # httpGet:
+    #   path: /web/home?0
+    #   port: *portName
+    tcpSocket:
       port: *portName
+    initialDelaySeconds: 60
 
   ## Recovery settings
   ## If true, `volume.name` must be an existing PVC. It will be mounted to `volume.mountPath`.
@@ -466,6 +507,28 @@ defaultSpec: &defaultSpec
 hubSpec:
   <<: *defaultSpec
 
+  ## A comma-delimited set of identifiers that will whitelist the set of built-in modules that 
+  ## will remain installed prior to gateway startup. This feature will help with container 
+  ## re-creation events where you want to ensure only a subset of modules remain enabled. For
+  ## the Hub, we want all enabled so this is an empty set by default.
+  ##
+  modules: []
+
 ## Spoke spec settings
 spokeSpec:
   <<: *defaultSpec
+
+  ## See comments in hubSpec. By default spoke(s) only get data from devices so most things are off
+  ##
+  modules:
+    - perspective
+    - allen-bradley-drivers
+    - bacnet-driver
+    - dnp3-driver
+    - iec-61850-driver
+    - logix-driver
+    - modbus-driver-v2
+    - omron-driver
+    - opc-ua
+    - siemens-drivers
+    - udp-tcp-drivers
