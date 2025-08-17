@@ -32,18 +32,20 @@ enabled: true
 
 ## Base Hub settings - there should always be one
 hub:
+  ## This will become <rootname-<name> when deployed
   name: hub
+
   ingress:
     ## If true, an Ingress will be created for this hub
-    ## 
     enabled: true
 
     ## Hostnames
     ## Must be provided if Ingress is enable
-    ##
     hosts:
-      - ignition-hub-test.exmple.com
+      - ignition-hub.exmple.com
+
   env: []
+
   ## 8-character license key (XXXX-XXXX) for leased activation (e.g. Maker Edition), used to set value for initial 
   ## gateway auto-commissioning. You can activate multiple 8-character license keys at the same time in a 
   ## comma-delimited format, such as: ABCD-1234,DCBA-4321,WXYZ-6789,ZYXW-9876. Changes to this variable will now update 
@@ -148,8 +150,7 @@ ingress:
   ## Annotations for Ingress
   ##
   annotations:
-    cert-manager.io/cluster-issuer: letsencrypt-prod
-    hajimari.io/icon: monitor-dashboard
+    cert-manager.io/cluster-issuer: letsencrypt-staging
 
   ## Labels to be added to the Ingress
   ##

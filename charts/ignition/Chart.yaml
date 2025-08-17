@@ -1,11 +1,11 @@
 apiVersion: v2
 name: ignition
-version: 8.1.30
-appVersion: 8.1.30
+version: 8.1.49
+appVersion: 8.1.49
 description: Helm chart for running a scale-out version of Ignition 8.1 from Inductive Automation.
 sources:
   - https://docs.inductiveautomation.com/display/DOC81/Docker+Image
   - https://github.com/juniorfoo/charts/
-icon: https://docs.inductiveautomation.com/download/attachments/58591566/IgnitionUserManualLogo-8.1.png?version=1&modificationDate=1605544080000&api=v2
+icon: https://docs.inductiveautomation.com/img/Logo-Ignition-Check.svg
 maintainers:
   - name: juniorfoo

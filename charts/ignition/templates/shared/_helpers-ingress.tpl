@@ -48,7 +48,7 @@ spec:
       {{- range $host := .context.ingress.hosts }}
       - {{ kebabcase $host }}
       {{- end }}
-      secretName: {{ $serviceName }}-general-tls
+      secretName: {{ $serviceName }}-tls-certificate
     {{- end }}
   rules:
   {{- if .context.ingress.hosts }}
