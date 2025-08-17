@@ -318,8 +318,9 @@ spec:
           persistentVolumeClaim:
             claimName: {{ .claimName }}
         {{- end }}
-  {{- if $.spec.persistence.enabled }}
+  {{- if or $.spec.persistence.enabled (and $.spec.recovery.enabled $.spec.recovery.create) }}
   volumeClaimTemplates:
+  {{- if $.spec.persistence.enabled }}
     - metadata:
         name: storage
       spec:
@@ -340,7 +341,6 @@ spec:
           emptyDir: {}
   {{- end }}
   {{- if and $.spec.recovery.enabled $.spec.recovery.create }}
-  volumeClaimTemplates:
     - metadata:
         name: backup
       spec:
