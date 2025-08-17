@@ -443,14 +443,40 @@ defaultSpec: &defaultSpec
     initialDelaySeconds: 60
 
   ## Recovery settings
-  ## If true, `volume.name` must be an existing PVC. It will be mounted to `volume.mountPath`.
-  ## Ignition application should then be configured to backup nightly to `<mountPath>/<instanceName>/...`
+  ## If `enabled` is `true` and `create` is `true`, a PVC will be created to store backups.
+  ## If `enabled` is `true` and `create` is `false`, `volume.name` must be an existing PVC and
+  ## it will be mounted to `volume.mountPath` (default is /backup).
+  ##
+  ## Ignition application should then be configured to backup nightly to `<mountPath>/...`
+  ## This configuration is NOT automated as of yet.
   ## 
-  ## If `restore.enabled` is true, we will initiate a restore from `volume.path` within the mount.
+  ## If `restore.enabled` is true, we will initiate a restore from `restore.path` within the mount.
   ## Note: The gateway restore will only apply on a fresh gateway launch. Subsequent restarts of 
   ## the container will not restore the indicated gateway backup.
   ##
-  recovery: {}
+  ## For restore to work, the user must:
+  ## 1. Set `create` to `false`
+  ## 2. Pre-create the volume with your backup.
+  ## 3. Ensure that the backup volume is mounted at the correct path.
+  recovery:
+    enabled: true
+    create: true
+    size: 10Gi
+
+    accessModes:
+    - ReadWriteOnce
+
+    ## See notes from persistence section.
+    # storageClass: "longhorn"
+    # storageClass: "-"
+
+    volume:
+      name: backup
+      mountPath: /backup
+
+    restore:
+      enabled: false
+      # path: restores/restore_fe.gwbk
 
   ## How many instances will be created. Since each hub or spoke has different configs, this should
   ## always be 1. 

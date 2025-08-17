@@ -273,9 +273,13 @@ spec:
             */}}
             - name: gateway-password
               mountPath: /run/secrets/ignition/
+            {{- if and $.spec.persistence.enabled }}
+            - name: storage
+              mountPath: /usr/local/bin/ignition/data
+            {{- end }}
             {{- if and $.spec.recovery.enabled }}
-            - name: {{ $.spec.recovery.volume.name }}
-              mountPath: {{ $.spec.recovery.volume.mountPath }}
+            - name: {{ $.spec.recovery.volume.name | default backup }}
+              mountPath: {{ $.spec.recovery.volume.mountPath | default "/backup" }}
             {{- end }}
             {{- range $.spec.extraSecretMounts }}
             - name: {{ .name }}
@@ -333,6 +337,27 @@ spec:
       {{- end }}
   {{- else }}
         - name: storage
+          emptyDir: {}
+  {{- end }}
+  {{- if and $.spec.recovery.enabled $.spec.recovery.create }}
+  volumeClaimTemplates:
+    - metadata:
+        name: backup
+      spec:
+        accessModes:
+          {{- toYaml $.spec.recovery.accessModes | nindent 10 }}
+        resources:
+          requests:
+            storage: {{ $.spec.recovery.size }}
+      {{- if $.spec.recovery.storageClass }}
+      {{- if (eq "-" $.spec.recovery.storageClass) }}
+        storageClassName: ""
+      {{- else }}
+        storageClassName: {{ $.spec.recovery.storageClass }}
+      {{- end }}
+      {{- end }}
+  {{- else }}
+        - name: backup
           emptyDir: {}
   {{- end }}
 {{- end }}
