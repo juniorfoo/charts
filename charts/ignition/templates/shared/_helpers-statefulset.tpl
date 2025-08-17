@@ -177,7 +177,7 @@ spec:
 
             {{- /* Disable quick start - default to false */}}
             - name: DISABLE_QUICKSTART
-              value: {{ $.root.Values.disableQuickstart | default false }}
+              value: {{ $.root.Values.disableQuickstart | default false | quote }}
 
             {{- /* Gateway admin user and pass */}}
             - name: GATEWAY_ADMIN_USERNAME
@@ -190,23 +190,23 @@ spec:
 
             {{- /* Gateway port(s) */}}
             - name: GATEWAY_HTTP_PORT
-              value: {{ $.root.Values.service.targetPort | default 8088 }}
+              value: {{ $.root.Values.service.targetPort | default 8088 | quote }}
 
             {{- /* Gateway Modules Enabled / Disabled */}}
             {{- if or $.context.modules $.spec.modules }}
             - name: GATEWAY_MODULES_ENABLED
-              value: {{ $.context.modules | default $.spec.modules | join "," }}
+              value: {{ $.context.modules | default $.spec.modules | join "," | quote }}
             {{- end }}
 
             {{- /* Gateway Restore Disabled */}}
             {{- if and $.spec.recovery.enabled $.spec.recovery.restore.enabled }}
             - name: GATEWAY_RESTORE_DISABLED
-              value: false
+              value: "false"
             {{- end }}
 
             {{- /* Edition - defaulting to standard */}}
             - name: IGNITION_EDITION
-              value: {{ $.root.Values.edition | default "standard" }}
+              value: {{ $.root.Values.edition | default "standard" | quote }}
 
             {{- /* UID and GID to step down to */}}
             {{- if $.spec.podSecurityContext.runAsNonRoot }}
@@ -219,16 +219,16 @@ spec:
             {{- /* License key(s) and tokens */}}
             {{- with $license_keys }}
             - name: IGNITION_LICENSE_KEY
-              value: {{ $license_keys | join "," }}
+              value: {{ $license_keys | join "," | quote }}
             {{- end }}
             {{- with $license_tokens }}
             - name: IGNITION_ACTIVATION_TOKEN
-              value: {{ $license_tokens | join "," }}
+              value: {{ $license_tokens | join "," | quote }}
             {{- end }}
 
             {{- /* Timezone */}}
             - name: TZ
-              value: UTC
+              value: "UTC"
 
             {{- if $.spec.extraEnv }}
             {{- toYaml $.spec.extraEnv | nindent 12 }}
