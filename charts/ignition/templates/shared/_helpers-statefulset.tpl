@@ -300,7 +300,7 @@ spec:
             items:
               - key: password
                 path: gateway-password
-        {{- if and $.spec.recovery.enabled }}
+        {{- if and $.spec.recovery.enabled (not $.spec.recovery.create) }}
         - name: {{ $.spec.recovery.volume.name }}
           persistentVolumeClaim:
             claimName: {{ $.spec.recovery.volume.name }}
@@ -320,7 +320,7 @@ spec:
         {{- end }}
   {{- if or $.spec.persistence.enabled (and $.spec.recovery.enabled $.spec.recovery.create) }}
   volumeClaimTemplates:
-  {{- if $.spec.persistence.enabled }}
+    {{- if $.spec.persistence.enabled }}
     - metadata:
         name: storage
       spec:
@@ -336,11 +336,11 @@ spec:
         storageClassName: {{ $.spec.persistence.storageClass }}
       {{- end }}
       {{- end }}
-  {{- else }}
+    {{- else }}
         - name: storage
           emptyDir: {}
-  {{- end }}
-  {{- if and $.spec.recovery.enabled $.spec.recovery.create }}
+    {{- end }}
+    {{- if and $.spec.recovery.enabled $.spec.recovery.create }}
     - metadata:
         name: backup
       spec:
@@ -356,9 +356,10 @@ spec:
         storageClassName: {{ $.spec.recovery.storageClass }}
       {{- end }}
       {{- end }}
-  {{- else }}
+    {{- else }}
         - name: backup
           emptyDir: {}
+    {{- end }}
   {{- end }}
 {{- end }}
 {{- end }}
