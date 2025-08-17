@@ -278,7 +278,7 @@ spec:
               mountPath: /usr/local/bin/ignition/data
             {{- end }}
             {{- if and $.spec.recovery.enabled }}
-            - name: {{ $.spec.recovery.volume.name | default backup }}
+            - name: {{ $.spec.recovery.volume.name | default "backup" }}
               mountPath: {{ $.spec.recovery.volume.mountPath | default "/backup" }}
             {{- end }}
             {{- range $.spec.extraSecretMounts }}
