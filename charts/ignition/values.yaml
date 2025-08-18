@@ -287,7 +287,7 @@ defaultSpec: &defaultSpec
  
   ## Name of the existing secret which contains the admin username and password
   ##
-  adminSecret: ignition-root-info
+  adminSecret: ignition-admin-password
 
   ## Affinity rules for the instance
   ## ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/
@@ -312,7 +312,7 @@ defaultSpec: &defaultSpec
   ##
   containerSecurityContext:
     allowPrivilegeEscalation: false
-    # readOnlyRootFilesystem: true # Docker image requires a RW file system :/
+    readOnlyRootFilesystem: false # Docker image requires a RW file system :/
     seccompProfile:
       type: RuntimeDefault
 
@@ -321,9 +321,12 @@ defaultSpec: &defaultSpec
     - -XX:MaxGCPauseMillis=200
 
   ## Optionally specify extra environment variables to add to the Ignition containers
-  extraEnv: []
-    # - name: FOO
-    #   value: BAR
+  extraEnv: 
+    # Configuration uses CA-signed certs for GAN auth
+    - name: GATEWAY_NETWORK_SECURITYPOLICY
+      value: "Unrestricted"
+    - name: GATEWAY_NETWORK_REQUIRETWOWAYAUTH
+      value: "true"
 
   ## Additional Secret mounts
   ## Secrets must be manually created in the namespace but we will automatically create the volumes
@@ -368,12 +371,20 @@ defaultSpec: &defaultSpec
   ## Pod liveness probe
   ##
   livenessProbe:
+    exec:
+      command:
+      - health-check.sh
+      - -t
+      - "3"
     # httpGet:
     #   path: /web/home?0
     #   port: *portName
-    tcpSocket:
-      port: *portName
+    # tcpSocket:
+    #   port: *portName
     initialDelaySeconds: 60
+    periodSeconds: 5
+    failureThreshold: 10
+    timeoutSeconds: 3
 
   ## Ignition JVM Memory (MB)
   ##
@@ -430,17 +441,25 @@ defaultSpec: &defaultSpec
   ## More info: https://github.com/kubernetes/community/blob/master/contributors/devel/sig-architecture/api-conventions.md#metadata
   ## Metadata Labels and Annotations gets propagated to the Ignition pods.
   ##
-  #podMetadata: {}
+  podMetadata: {}
 
   ## Pod readiness probe
   ##
   readinessProbe:
+    exec:
+      command:
+      - health-check.sh
+      - -t
+      - "3"
     # httpGet:
     #   path: /web/home?0
     #   port: *portName
-    tcpSocket:
-      port: *portName
-    initialDelaySeconds: 60
+    # tcpSocket:
+    #   port: *portName
+    initialDelaySeconds: 30
+    periodSeconds: 5
+    failureThreshold: 10
+    timeoutSeconds: 3
 
   ## Recovery settings
   ## If `enabled` is `true` and `create` is `true`, a PVC will be created to store backups.

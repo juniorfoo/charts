@@ -23,6 +23,8 @@ Note:
     whenScaled: Retain
 
 - Build with design hints from:
+  - https://github.com/thirdgen88/icc2023-ignition-k8s/blob/main/base/frontend-statefulset.yml
+  - https://forum.inductiveautomation.com/t/kubernetes-persistentvolume-backup-data/41306/11
   - https://github.com/prometheus-community/helm-charts/blob/main/charts/kube-prometheus-stack/values.yaml
   - https://github.com/grafana/loki/blob/main/production/helm/loki/templates/backend/statefulset-backend.yaml
   - https://github.com/prometheus-community/helm-charts/blob/main/charts/alertmanager/templates/statefulset.yaml
@@ -152,10 +154,27 @@ spec:
       securityContext:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- with $.spec.initContainers }}
       initContainers:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
+        - name: seed-volume
+          image: "{{ $.spec.image.repository }}:{{ $.spec.image.tag | default $.root.Chart.AppVersion }}"
+          resources:
+            limits:
+              memory: "256Mi"
+              cpu: "1000m"
+          command:
+          - sh
+          - -c
+          - >
+            if [ ! -f /data/.ignition-seed-complete ]; then
+              cp -dpR /usr/local/bin/ignition/data/* /data/ ;
+              touch /data/.ignition-seed-complete ;
+            fi
+          volumeMounts:
+          - mountPath: /data
+            name: storage
+        {{- with $.spec.initContainers }}
+          {{- toYaml . | nindent 8 }}
+        {{- end }}
       containers:
         - name: {{ $.root.Chart.Name }}
           image: "{{ $.spec.image.repository }}:{{ $.spec.image.tag | default $.root.Chart.AppVersion }}"
@@ -211,9 +230,9 @@ spec:
             {{- /* UID and GID to step down to */}}
             {{- if $.spec.podSecurityContext.runAsNonRoot }}
             - name: IGNITION_GID
-              value: {{ $.spec.podSecurityContext.runAsGroup | default 1000 | quote }}
+              value: {{ $.spec.podSecurityContext.runAsGroup | default 2003 | quote }}
             - name: IGNITION_UID
-              value: {{ $.spec.podSecurityContext.runAsUser | default 1000 | quote }}
+              value: {{ $.spec.podSecurityContext.runAsUser | default 2003 | quote }}
             {{- end }}
 
             {{- /* License key(s) and tokens */}}
@@ -246,7 +265,8 @@ spec:
             - wrapper.java.initmemory={{ $.spec.memory.min | default 256 }} 
             {{- if $.spec.unsignedModules }}
             - -Dignition.allowunsignedmodules=false 
-            {{- end }}            {{- with $.spec.extraArgs }}
+            {{- end }}
+            {{- with $.spec.extraArgs }}
             {{- toYaml $.spec.extraArgs | nindent 12 }}
             {{- end }}
 
