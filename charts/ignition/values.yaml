@@ -419,19 +419,14 @@ defaultSpec: &defaultSpec
   podAntiAffinityTopologyKey: kubernetes.io/hostname
 
   ## PodSecurityContext holds pod-level security attributes and common container settings.
-  ## This defaults to non root user with uid 1000 and gid 1000. *v1.PodSecurityContext
+  ## This defaults to non root user with uid 2003 and gid 2003. *v1.PodSecurityContext
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/
   ##
-  ## NOTE: This image requires the container to run as root and then the application will step
-  ##       down to the values below. This Chart therefore does not apply these at the 
-  ##       `spec.template.spec.securityContext` but only at 
-  ##       `spec.template.spec.container[*].securityContext`.
-  ##
   podSecurityContext:
-    runAsGroup: 1000
+    runAsGroup: 2003
     runAsNonRoot: true
-    runAsUser: 1000
-    # fsGroup: 2000
+    runAsUser: 2003
+    fsGroup: 2003
 
   ## Priority class assigned to the Pods
   ##
