@@ -160,11 +160,9 @@ spec:
           command:
             - /config/scripts/invoke-args.sh
           args:
-            - sleep 1000
             - /config/scripts/seed-data-volume.sh
             - /config/scripts/seed-redundancy.sh
             - /config/scripts/prepare-gan-certificates.sh
-            - cp /config/files/logback.xml /data/logback.xml
           volumeMounts:
           - mountPath: /data
             name: storage
