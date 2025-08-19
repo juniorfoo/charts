@@ -1,0 +1,231 @@
+apiVersion: v1
+data:
+  invoke-args.sh: |-
+    #!/usr/bin/env bash
+    set -eo pipefail
+
+    # Helper script to simply invoke args passed on the CLI
+    for arg in "$@"; do
+      eval "$arg"
+    done
+  prepare-gan-certificates.sh: "#!/usr/bin/env bash\nset -eo pipefail\necho \"Preparing
+    Gateway Network Certificates\"\n\n# Global variable defaults\nIGNITION_DATA_DIR=\"/data\"\nGAN_CA_SECRETS_DIR=\"/run/secrets/ignition-gan-ca\"\nGAN_SECRETS_DIR=\"/run/secrets/gan-tls\"\nMETRO_KEYSTORE_ALIAS=\"metro-key\"\nMETRO_KEYSTORE_PASSPHRASE=\"metro\"\nGWBK_LOCATION=\"\"\n\n###############################################################################\n#
+    Places GAN CA Certificate and GAN Client Keystores into place\n###############################################################################\nfunction
+    main() {\n  # Populate GAN CA Certificate into the trusted certs folder\n  populateGanCaCertificate\n\n
+    \ # Update the alias in the inbound GAN PKCS#12 keystore and place into `data/local`\n
+    \ populateGanKeystore\n\n  # Update the GWBK with the GAN CA Certificate trust\n
+    \ if [ -n \"${GWBK_LOCATION:-}\" ]; then\n    updateGwbk\n  fi\n}\n\n###############################################################################\n#
+    Places the GAN Client Keystore into the Ignition data/local folder\n###############################################################################\nfunction
+    populateGanKeystore() {\n  info \"Populating GAN Client Keystore into Ignition
+    data/local/metro-keystore\"\n\n  # Replace any existing GAN client keystore with
+    the updated one from the mounted secret\n  rm -v -f \"${IGNITION_DATA_DIR}/local/metro-keystore\"\n
+    \ cp \"${GAN_SECRETS_DIR}/keystore.p12\" \"${IGNITION_DATA_DIR}/local/metro-keystore\"\n\n
+    \ # Modify the GAN client keystore to use the alias \"metro-key\" to align with
+    Ignition defaults\n  existing_alias=$(keytool -list -keystore \"${IGNITION_DATA_DIR}/local/metro-keystore\"
+    -storepass ${METRO_KEYSTORE_PASSPHRASE} | grep PrivateKeyEntry | cut -d, -f 1)\n
+    \ target_alias=\"${METRO_KEYSTORE_ALIAS}\"\n  if [ \"${existing_alias}\" != \"${target_alias}\"
+    ]; then\n    keytool -changealias -alias \"${existing_alias}\" -destalias \"${target_alias}\"
+    \\\n      -keystore \"${IGNITION_DATA_DIR}/local/metro-keystore\" -storepass ${METRO_KEYSTORE_PASSPHRASE}\n
+    \ fi\n}\n\n###############################################################################\n#
+    Places the GAN CA Certificate into the Ignition gateway network trusted certs\n###############################################################################\nfunction
+    populateGanCaCertificate() {\n  info \"Populating GAN CA Certificate into Ignition
+    gateway network trusted certs folders\"\n\n  # Copy the GAN Issuer CA certificate
+    to trusted certs for server/client to establish root trust\n  mkdir -v -p \"${IGNITION_DATA_DIR}/gateway-network/server/security/pki/trusted/certs/\"\n
+    \ mkdir -v -p \"${IGNITION_DATA_DIR}/gateway-network/client/security/pki/trusted/certs/\"\n
+    \ cp -v \"${GAN_CA_SECRETS_DIR}/ca.crt\" \"${IGNITION_DATA_DIR}/gateway-network/server/security/pki/trusted/certs/ignition-gan-ca.crt\"\n
+    \ cp -v \"${GAN_CA_SECRETS_DIR}/ca.crt\" \"${IGNITION_DATA_DIR}/gateway-network/client/security/pki/trusted/certs/ignition-gan-ca.crt\"\n}\n\n###############################################################################\n#
+    Updates the GWBK with the GAN CA Certificate trust\n###############################################################################\nfunction
+    updateGwbk() {\n  info \"Updating GWBK with GAN CA Certificate trust\"\n\n  #
+    Target destination paths for the GAN CA certificate\n  local dest_locations=(
+    \n    \"gateway-network/server/security/pki/trusted/certs/ignition-gan-ca.crt\"\n
+    \   \"gateway-network/client/security/pki/trusted/certs/ignition-gan-ca.crt\"\n
+    \ )\n\n  # Remove existing files in destination location (if present)\n  zip -d
+    \"${GWBK_LOCATION}\" \"${dest_locations[@]}\" || true\n  \n  # Add the GAN CA
+    Certificate to the GWBK in client/server folders\n  for dest in \"${dest_locations[@]}\";
+    do\n    zip -j \"${GWBK_LOCATION}\" \"${GAN_CA_SECRETS_DIR}/ca.crt\" \"${dest}\"\n
+    \   # NOTE: this seems to fail on macOS zipnote\n    printf \"@ ca.crt\\n@=%s\\n\"
+    \"${dest}\" | zipnote -w \"${GWBK_LOCATION}\"\n  done\n\n  debug \"Zip contents:\\n$(unzip
+    -l \"${GWBK_LOCATION}\")\"\n}\n\n###############################################################################\n#
+    Alias for printing to console/stdout\n# Arguments:\n#   <...> Content to print\n###############################################################################\nfunction
+    info() {\n  readarray -t message_arr <<< \"${*}\"\n  for message_line in \"${message_arr[@]}\";
+    do\n    printf \"%s\\n\" \"${message_line}\"\n  done\n}\n\n###############################################################################\n#
+    Outputs to stderr\n###############################################################################\nfunction
+    debug() {\n  # shellcheck disable=SC2236\n  if [ ! -z ${verbose+x} ]; then\n    >&2
+    echo \"  DEBUG: $*\"\n  fi\n}\n\n###############################################################################\n#
+    Print usage information\n###############################################################################\nfunction
+    usage() {\n  >&2 echo \"Usage: $0 -a <alias> -c <path/to/ca/secret> -s <path/to/gan/secret>
+    -d <path/to/data/folder> [-g <path/to/gwbk>]\"\n  >&2 echo \"  -a <alias> - The
+    alias to use for the GAN client keystore (default: ${METRO_KEYSTORE_ALIAS})\"\n
+    \ >&2 echo \"  -c <path/to/ca/secret> - The path to the mounted secret containing
+    the GAN CA certificate (default: ${GAN_CA_SECRETS_DIR})\"\n  >&2 echo \"  -s <path/to/gan/secret>
+    - The path to the mounted secret containing the GAN client certs/keystore (default:
+    ${GAN_SECRETS_DIR})\"\n  >&2 echo \"  -d <path/to/data/folder> - The path to the
+    Ignition data folder (default: ${IGNITION_DATA_DIR})\"\n  >&2 echo \"  -g <path/to/gwbk>
+    - Supply a GWBK to attempt to update with GAN CA trust\"\n  >&2 echo \"  -h -
+    Print this help message\"\n  >&2 echo \"  -v - Enable verbose output\"\n}\n\n#
+    Argument Processing\nwhile getopts \":hva:c:s:d:g:\" opt; do\n  case \"$opt\"
+    in\n  v)\n    verbose=1\n    ;;\n  a)\n    METRO_KEYSTORE_ALIAS=\"${OPTARG}\"\n
+    \   ;;\n  c)\n    GAN_CA_SECRETS_DIR=\"${OPTARG}\"\n    ;;\n  s)\n    GAN_SECRETS_DIR=\"${OPTARG}\"\n
+    \   ;;\n  d)\n    IGNITION_DATA_DIR=\"${OPTARG}\"\n    ;;\n  g)\n    GWBK_LOCATION=\"${OPTARG}\"\n
+    \   ;;\n  h)\n    usage\n    exit 0\n    ;;\n  \\?)\n    usage\n    echo \"Invalid
+    option: -${OPTARG}\" >&2\n    exit 1\n    ;;\n  :)\n    usage\n    echo \"Invalid
+    option: -${OPTARG} requires an argument\" >&2\n    exit 1\n    ;;\n  esac\ndone\n\n#
+    shift positional args based on number consumed by getopts\nshift $((OPTIND-1))\n\n#
+    Perform argument checks\nif [ ! -f \"${GAN_CA_SECRETS_DIR}/ca.crt\" ]; then\n
+    \ >&2 echo \"ERROR: GAN CA Certificate not found at ${GAN_CA_SECRETS_DIR}/ca.crt\"\n
+    \ usage\n  exit 1\nfi\n\nif [ ! -f \"${GAN_SECRETS_DIR}/keystore.p12\" ]; then\n
+    \ >&2 echo \"ERROR: GAN Client Keystore not found at ${GAN_SECRETS_DIR}/keystore.p12\"\n
+    \ usage\n  exit 1\nfi\n\nif [ ! -d \"${IGNITION_DATA_DIR}\" ]; then\n  >&2 echo
+    \"ERROR: Ignition Data Directory not found at ${IGNITION_DATA_DIR}\"\n  usage\n
+    \ exit 1\nfi\n\nif [ -n \"${GWBK_LOCATION:-}\" ] && [ ! -f \"${GWBK_LOCATION}\"
+    ]; then\n  >&2 echo \"ERROR: GWBK not found at ${GWBK_LOCATION}\"\n  usage\n  exit
+    1\nfi\n\n# check if zip and zipnote commands are installed and exit if gwbk is
+    supplied\nif [ -n \"${GWBK_LOCATION:-}\" ]; then\n  if ! command -v zip &> /dev/null;
+    then\n    >&2 echo \"ERROR: GWBK specified, but 'zip' command not found\"\n    exit
+    1\n  fi\n  if ! command -v zipnote &> /dev/null; then\n    >&2 echo \"ERROR: GWBK
+    specified, but 'zipnote' command not found\"\n    exit 1\n  fi\nfi\n\nmain"
+  prepare-tls-certificates.sh: |
+    #!/usr/bin/env bash
+    set -eo pipefail
+    echo "Preparing Web Server TLS Certificates"
+
+    # Replace any existing TLS keystore with the updated one from the mounted secret
+    rm -v -f /data/local/ssl.pfx
+    cp /run/secrets/web-tls/keystore.p12 /data/local/ssl.pfx
+
+    # Modify the TLS keystore to use the alias "ignition" to align with Ignition defaults
+    existing_alias=$(keytool -list -keystore /data/local/ssl.pfx -storepass ignition | grep PrivateKeyEntry | cut -d, -f 1)
+    target_alias="ignition"
+    if [ "${existing_alias}" != "${target_alias}" ]; then
+      keytool -changealias -alias "${existing_alias}" -destalias ${target_alias} \
+        -keystore /data/local/ssl.pfx -storepass ignition
+    fi
+  redundant-health-check.sh: |
+    #!/usr/bin/env bash
+    set -eo pipefail
+
+    # usage redundant-health-check.sh [flags] STATUS_ENDPOINT
+    #   ie: ./redundant-health-check.sh -r Good -s RUNNING http://localhost:8088/system/gwinfo
+
+    # Check for minimum of bash 4
+    if [ "${BASH_VERSINFO:-0}" -lt 4 ]; then
+      echo "ERROR: bash version 4 or higher is required for this script, found version ${BASH_VERSINFO[0]}" >&2
+      exit 1
+    fi
+
+    function main() {
+      if [ ! -x "$(command -v curl)" ]; then
+        echo "ERROR: curl is required for this health check" >&2
+        exit 1
+      fi
+
+      debug "Status endpoint: ${status_endpoint}, expecting state: ${expected_context_state}, timeout: ${timeout_secs}."
+
+      curl_output=$(curl -s --max-time "${timeout_secs}" -L -k -f "${status_endpoint}" 2>&1)
+
+      debug "curl output: ${curl_output}"
+
+      # Gather the fields from gwinfo into an associative array
+      IFS=';' read -ra gwinfo_fields_raw <<< "$curl_output"
+      declare -A gwinfo_fields=( )
+      for field in "${gwinfo_fields_raw[@]}"; do
+        IFS='=' read -ra field_parts <<< "$field"
+        gwinfo_fields[${field_parts[0]}]=${field_parts[1]}
+      done
+
+      # Check ContextStatus and RedundantState fields and exit if no match
+      if [ "${gwinfo_fields[ContextStatus]}" != "${expected_context_state}" ]; then
+        echo "FAILED: ContextStatus is ${gwinfo_fields[ContextStatus]}, expected ${expected_context_state}" >&2
+        exit 1
+      elif [ "${gwinfo_fields[RedundantState]}" != "${expected_redundant_state}" ]; then
+        # Check RedundantNodeActiveStatus field
+        if [ "${gwinfo_fields[RedundantNodeActiveStatus]}" != "Active" ]; then
+          echo "FAILED: Not Active and RedundantState is ${gwinfo_fields[RedundantState]}, expected ${expected_redundant_state}" >&2
+          exit 1
+        fi
+      fi
+      debug "SUCCESS"
+      exit 0
+    }
+
+    function debug() {
+      # shellcheck disable=SC2236
+      if [ ! -z ${verbose+x} ]; then
+        echo "DEBUG: $*"
+      fi
+    }
+
+    # Argument Processing
+    while getopts ":vr:s:t:" opt; do
+      case "$opt" in
+      v)
+        verbose=1
+        ;;
+      r)
+        expected_redundant_state=${OPTARG}
+        ;;
+      s)
+        expected_context_state=${OPTARG}
+        ;;
+      t)
+        timeout_secs=${OPTARG}
+        if ! [[ ${timeout_secs} =~ ^[0-9]+$ ]]; then
+          echo "ERROR: timeout requires a number" >&2
+          exit 1
+        fi
+        ;;
+      \?)
+        echo "Invalid option: -${OPTARG}" >&2
+        exit 1
+        ;;
+      :)
+        echo "Invalid option: -${OPTARG} requires an argument" >&2
+        exit 1
+        ;;
+      esac
+    done
+
+    # shift positional args based on number consumed by getopts
+    shift $((OPTIND-1))
+
+    # remaining argument will be the status endpoint, also map in defaults for the other optionals
+    port=${GATEWAY_HTTP_PORT:-8088}
+    status_endpoint=${1:-"http://localhost:${port}/system/gwinfo"}
+    timeout_secs=${timeout_secs:-3}
+    expected_context_state=${expected_context_state:-RUNNING}
+    expected_redundant_state=${expected_redundant_state:-Good}
+
+    # pre-processing done, proceed with main call
+    main
+  seed-data-volume.sh: |
+    #!/usr/bin/env bash
+    set -eo pipefail
+
+    if [ ! -f /data/.ignition-seed-complete ]; then
+        echo "Seeding Ignition Data Volume"
+        touch /data/.ignition-seed-complete
+        cp -dpR /usr/local/bin/ignition/data/* /data/
+    fi
+  seed-redundancy.sh: |-
+    #!/usr/bin/env bash
+    set -eo pipefail
+
+    if [[ "${HOSTNAME}" =~ -([0-9])$ ]] && [ ! -f /data/redundancy.xml ]; then
+      case "${BASH_REMATCH[1]}" in
+        0)
+          echo "Initializing Redundancy as Primary"
+          cp /config/files/redundancy-primary.xml /data/redundancy.xml
+          ;;
+        1)
+          echo "Initializing Redundancy as Backup"
+          cp /config/files/redundancy-backup.xml /data/redundancy.xml
+          ;;
+        *)
+          echo "Unknown Redundancy Hostname Suffix: ${HOSTNAME}"
+          ;;
+      esac
+    fi
+kind: ConfigMap
+metadata:
+  creationTimestamp: null
+  name: ignition-config-scripts

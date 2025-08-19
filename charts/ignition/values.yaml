@@ -24,7 +24,7 @@ disableQuickstart: false
 
 ## Ignition edition (standard, edge, or maker)
 ## 
-edition: standard
+edition: maker
 
 ## If true, Ignition instance(s) will be created
 ##
@@ -219,26 +219,24 @@ service:
   ##
   port: 8088
 
-  ## Port name for Ignition Service
+  ## Port names for Ignition Services
   ##
-  portName: &portName http-web
+  portNameHttp: &portNameHttp http
+  portNameHttps: &portNameHttps https
+  portNameGan: &portNameGan gan
 
   ## Port on the Pod
   ##
-  targetPort: 8088
+  portHttp: 8088
+  portHttps: 8443
+  portGan: 8060
 
   ## Port to expose on each node
   ## Only used if service.type is 'NodePort'
   ##
-  nodePort: 38088
-
-  ## Additional ports to open for Ignition Service
-  ##
-  additionalPorts: []
-  # additionalPorts:
-  # - name: https-web
-  #   port: 8043
-  #   targetPort: 8043
+  nodePortHttp: 38088
+  nodePortHttps: 38443
+  nodePortGan: 38060
 
   ## Annotations for Ignition Service
   ##
@@ -378,9 +376,9 @@ defaultSpec: &defaultSpec
       - "3"
     # httpGet:
     #   path: /web/home?0
-    #   port: *portName
+    #   port: *portNameHttp
     # tcpSocket:
-    #   port: *portName
+    #   port: *portNameHttp
     initialDelaySeconds: 60
     periodSeconds: 5
     failureThreshold: 10
@@ -448,9 +446,9 @@ defaultSpec: &defaultSpec
       - "3"
     # httpGet:
     #   path: /web/home?0
-    #   port: *portName
+    #   port: *portNameHttp
     # tcpSocket:
-    #   port: *portName
+    #   port: *portNameHttp
     initialDelaySeconds: 30
     periodSeconds: 5
     failureThreshold: 10
@@ -475,7 +473,7 @@ defaultSpec: &defaultSpec
   recovery:
     enabled: true
     create: true
-    size: 10Gi
+    size: 3Gi
 
     accessModes:
     - ReadWriteOnce
@@ -526,7 +524,7 @@ defaultSpec: &defaultSpec
     # storageClass: "-"
     accessModes:
       - ReadWriteOnce
-    size: 10Gi
+    size: 3Gi
     selector: {}
 
   ## If specified, the pod's tolerations.

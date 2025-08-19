@@ -1,0 +1,14 @@
+apiVersion: v1
+data:
+  gateway-base-config.env: |
+    GATEWAY_ADMIN_USERNAME=admin
+    IGNITION_EDITION=maker
+    ACCEPT_IGNITION_EULA=Y
+    DISABLE_QUICKSTART=true
+    # Configuration uses CA-signed certs for GAN auth
+    GATEWAY_NETWORK_SECURITYPOLICY=Unrestricted
+    GATEWAY_NETWORK_REQUIRETWOWAYAUTH=true
+kind: ConfigMap
+metadata:
+  creationTimestamp: null
+  name: gateway-base-config

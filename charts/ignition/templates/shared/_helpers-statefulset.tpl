@@ -155,23 +155,27 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       initContainers:
-        - name: seed-volume
+        - name: preconfigure
           image: "{{ $.spec.image.repository }}:{{ $.spec.image.tag | default $.root.Chart.AppVersion }}"
-          resources:
-            limits:
-              memory: "256Mi"
-              cpu: "1000m"
           command:
-          - sh
-          - -c
-          - >
-            if [ ! -f /data/.ignition-seed-complete ]; then
-              cp -dpR /usr/local/bin/ignition/data/* /data/ ;
-              touch /data/.ignition-seed-complete ;
-            fi
+            - /config/scripts/invoke-args.sh
+          args:
+            - /config/scripts/seed-data-volume.sh
+            - /config/scripts/seed-redundancy.sh
+            - /config/scripts/prepare-gan-certificates.sh
+            - cp /config/files/logback.xml /data/logback.xml
           volumeMounts:
           - mountPath: /data
             name: storage
+          - mountPath: /config/scripts
+            name: ignition-config-scripts
+          - mountPath: /config/files
+            name: ignition-config-files
+          - mountPath: /run/secrets/gan-tls
+            name: gan-tls
+          - mountPath: /run/secrets/ignition-gan-ca
+            name: ignition-gan-ca
+            readOnly: true
         {{- with $.spec.initContainers }}
           {{- toYaml . | nindent 8 }}
         {{- end }}
@@ -209,7 +213,11 @@ spec:
 
             {{- /* Gateway port(s) */}}
             - name: GATEWAY_HTTP_PORT
-              value: {{ $.root.Values.service.targetPort | default 8088 | quote }}
+              value: {{ $.root.Values.service.targetPortHttp | default 8088 | quote }}
+            - name: GATEWAY_HTTPS_PORT
+              value: {{ $.root.Values.service.targetPortHttps | default 8043 | quote }}
+            - name: GATEWAY_GAN_PORT
+              value: {{ $.root.Values.service.targetPortGan | default 8060 | quote }}
 
             {{- /* Gateway Modules Enabled / Disabled */}}
             {{- if or $.context.modules $.spec.modules }}
@@ -262,6 +270,7 @@ spec:
             - -r {{ printf "%s/%s" $.spec.recovery.volume.mountPath $.spec.recovery.restore.path }}
             {{- end }}
             - -- 
+            - gateway.useProxyForwardedHeader=true
             - wrapper.java.initmemory={{ $.spec.memory.min | default 256 }} 
             {{- if $.spec.unsignedModules }}
             - -Dignition.allowunsignedmodules=false 
@@ -271,8 +280,14 @@ spec:
             {{- end }}
 
           ports:
-            - name: {{ $.root.Values.service.portName | default "http-web" }}
-              containerPort: {{ $.root.Values.service.targetPort | default 8088 }}
+            - name: {{ $.root.Values.service.portNameHttp | default "http" }}
+              containerPort: {{ $.root.Values.service.portHttp | default 8088 }}
+              protocol: TCP
+            - name: {{ $.root.Values.service.portNameHttps | default "https" }}
+              containerPort: {{ $.root.Values.service.portHttps | default 8043 }}
+              protocol: TCP
+            - name: {{ $.root.Values.service.portNameGan | default "gan" }}
+              containerPort: {{ $.root.Values.service.portGan | default 8060 }}
               protocol: TCP
             {{- if $.root.Values.debug }}
             - name: debug
@@ -320,6 +335,20 @@ spec:
             items:
               - key: password
                 path: gateway-password
+        - name: ignition-config-scripts
+          configMap:
+            name: ignition-config-scripts
+            defaultMode: 0755
+        - name: ignition-config-files
+          configMap:
+            name: ignition-config-files
+            defaultMode: 0644
+        - name: ignition-gan-ca
+          secret:
+            secretName: ignition-gan-ca
+        - name: gan-tls
+          secret:
+            secretName: backend-gan-tls
         {{- if and $.spec.recovery.enabled (not $.spec.recovery.create) }}
         - name: {{ $.spec.recovery.volume.name }}
           persistentVolumeClaim:

@@ -52,16 +52,27 @@ spec:
   externalTrafficPolicy: {{ $.root.Values.service.externalTrafficPolicy }}
 {{- end }}
   ports:
-  - name: {{ $.root.Values.service.portName }}
+  - name: {{ $.root.Values.service.portNameHttp }}
   {{- if eq $.root.Values.service.type "NodePort" }}
-    nodePort: {{ $.root.Values.service.nodePort }}
+    nodePort: {{ $.root.Values.service.nodePortHttp }}
   {{- end }}
-    port: {{ $.root.Values.service.port }}
-    targetPort: {{ $.root.Values.service.targetPort }}
+    port: {{ $.root.Values.service.portHttp }}
+    targetPort: {{ $.root.Values.service.portNameHttp }}
     protocol: TCP
-{{- if $.root.Values.service.additionalPorts }}
-{{ toYaml $.root.Values.service.additionalPorts | indent 2 }}
-{{- end }}
+  - name: {{ $.root.Values.service.portNameHttps }}
+  {{- if eq $.root.Values.service.type "NodePort" }}
+    nodePort: {{ $.root.Values.service.nodePortHttps }}
+  {{- end }}
+    port: {{ $.root.Values.service.portHttps }}
+    targetPort: {{ $.root.Values.service.portNameHttps }}
+    protocol: TCP
+  - name: {{ $.root.Values.service.portNameGan }}
+  {{- if eq $.root.Values.service.type "NodePort" }}
+    nodePort: {{ $.root.Values.service.nodePortGan }}
+  {{- end }}
+    port: {{ $.root.Values.service.portGan }}
+    targetPort: {{ $.root.Values.service.portNameGan }}
+    protocol: TCP
   selector:
     app.kubernetes.io/component: {{ template "ignition.componentname" $.context.name }}
 {{ include "ignition.selectorLabels" $.root | indent 4 }}
