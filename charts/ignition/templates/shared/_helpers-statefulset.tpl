@@ -161,7 +161,7 @@ spec:
             - /config/scripts/invoke-args.sh
           args:
             - /config/scripts/seed-data-volume.sh
-            - /config/scripts/seed-redundancy.sh
+            - /config/scripts/seed-redundancy.sh ignition-{{ .context.name }}-0.ignition-{{ .context.name }}
             - /config/scripts/prepare-gan-certificates.sh
           volumeMounts:
           - mountPath: /data
