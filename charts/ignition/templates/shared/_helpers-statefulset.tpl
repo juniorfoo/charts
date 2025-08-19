@@ -348,7 +348,7 @@ spec:
             secretName: ignition-gan-ca
         - name: gan-tls
           secret:
-            secretName: backend-gan-tls
+            secretName: ignition-gan-tls
         {{- if and $.spec.recovery.enabled (not $.spec.recovery.create) }}
         - name: {{ $.spec.recovery.volume.name }}
           persistentVolumeClaim:
