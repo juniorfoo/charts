@@ -39,9 +39,6 @@ spec:
   externalIPs:
 {{ toYaml $.root.Values.service.externalIps | indent 4 }}
 {{- end }}
-{{- if $.root.Values.service.externalIp }}
-  externalIp: {{ $.root.Values.service.externalIp }}
-{{- end }}
 {{- if $.root.Values.service.loadBalancerIP }}
   loadBalancerIP: {{ $.root.Values.service.loadBalancerIP }}
 {{- end }}

@@ -205,8 +205,6 @@ service:
   ## Ref: https://kubernetes.io/docs/user-guide/services/#external-ips
   ##
   externalIps: []
-  # https://kube-vip.io/docs/usage/kubernetes-services/#using-dhcp-for-load-balancers-experimental-kube-vip-v021
-  externalIp: ""
 
   ## Loadbalancer IP
   ## Only use if service.type is "LoadBalancer"
