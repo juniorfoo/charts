@@ -1,8 +1,22 @@
 ---
+# 0) Cluster-wide self-signed issuer for bootstrapping the CA
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: selfsigned-issuer
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+spec:
+  selfSigned: {}
+
+---
+# 1) Create a namespaced CA using the self-signed ClusterIssuer
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
   name: ignition-gan-ca
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
 spec:
   isCA: true
   commonName: ignition-gan-ca
@@ -15,35 +29,47 @@ spec:
     name: selfsigned-issuer
     kind: ClusterIssuer
     group: cert-manager.io
+
 ---
+# 2) Namespaced Issuer that uses the CA secret created above
 apiVersion: cert-manager.io/v1
 kind: Issuer
 metadata:
   name: ignition-gan-issuer
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
 spec:
   ca:
     secretName: ignition-gan-ca
+
 ---
+# 3) Keystore password (unchanged, but annotated so it lands early)
 apiVersion: v1
 kind: Secret
 metadata:
   name: ignition-gan-metro-keystore
+  annotations:
+    argocd.argoproj.io/sync-wave: "2"
 type: Opaque
 data:
   metro.keystore.password: bWV0cm8= # metro
+
 ---
+# 4) Leaf certificate (use a valid domain!)
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
-  name: frontend-gan
+  name: ignition-gan
+  annotations:
+    argocd.argoproj.io/sync-wave: "3"
 spec:
-  secretName: frontend-gan-tls
+  secretName: ignition-gan-tls
   issuerRef:
     name: ignition-gan-issuer
     kind: Issuer
-  commonName: "frontend"
+  commonName: "ignition"
   dnsNames:
-    - "*.ign-frontend"
+    - "*.jcav.io"
   duration: 8760h # 1 year
   keystores:
     pkcs12:
@@ -51,23 +77,4 @@ spec:
       passwordSecretRef:
         name: ignition-gan-metro-keystore
         key: metro.keystore.password
----
-apiVersion: cert-manager.io/v1
-kind: Certificate
-metadata:
-  name: backend-gan
-spec:
-  secretName: backend-gan-tls
-  issuerRef:
-    name: ignition-gan-issuer
-    kind: Issuer
-  commonName: "backend"
-  dnsNames:
-    - "*.ign-backend"
-  duration: 8760h # 1 year
-  keystores:
-    pkcs12:
-      create: true
-      passwordSecretRef:
-        name: ignition-gan-metro-keystore
-        key: metro.keystore.password
+
