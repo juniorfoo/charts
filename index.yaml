@@ -3,58 +3,10 @@ entries:
   ignition:
   - apiVersion: v2
     appVersion: 8.3.0-beta3
-    created: "2025-08-19T19:34:38.172028871Z"
+    created: "2025-08-18T15:36:13.725856961Z"
     description: Helm chart for running a scale-out version of Ignition 8.3 from Inductive
       Automation.
-    digest: 7f1b9541eeda2288400524834ec989ce5c213878fb107a9b9b85885e60c084cb
-    icon: https://docs.inductiveautomation.com/img/Logo-Ignition-Check.svg
-    maintainers:
-    - name: juniorfoo
-    name: ignition
-    sources:
-    - https://docs.inductiveautomation.com/docs/8.3/platform/docker-image
-    - https://github.com/juniorfoo/charts/
-    urls:
-    - https://github.com/juniorfoo/charts/releases/download/ignition-8.3.0-beta3/ignition-8.3.0-beta3.tgz
-    version: 8.3.0-beta3
-  - apiVersion: v2
-    appVersion: 8.3.0-beta3
-    created: "2025-08-19T19:51:13.032457041Z"
-    description: Helm chart for running a scale-out version of Ignition 8.3 from Inductive
-      Automation.
-    digest: d2cc024b2d7f939c0e41987c441b86278b89ef6af0ae671dade4374683ce4389
-    icon: https://docs.inductiveautomation.com/img/Logo-Ignition-Check.svg
-    maintainers:
-    - name: juniorfoo
-    name: ignition
-    sources:
-    - https://docs.inductiveautomation.com/docs/8.3/platform/docker-image
-    - https://github.com/juniorfoo/charts/
-    urls:
-    - https://github.com/juniorfoo/charts/releases/download/ignition-8.3.0-beta3/ignition-8.3.0-beta3.tgz
-    version: 8.3.0-beta3
-  - apiVersion: v2
-    appVersion: 8.3.0-beta3
-    created: "2025-08-17T16:03:09.972594026Z"
-    description: Helm chart for running a scale-out version of Ignition 8.3 from Inductive
-      Automation.
-    digest: 1ff8de17bd5428aa70bb30b6b9b40b5f49711a7d5bc3ea50e6331a6fe35f5c4b
-    icon: https://docs.inductiveautomation.com/img/Logo-Ignition-Check.svg
-    maintainers:
-    - name: juniorfoo
-    name: ignition
-    sources:
-    - https://docs.inductiveautomation.com/docs/8.3/platform/docker-image
-    - https://github.com/juniorfoo/charts/
-    urls:
-    - https://github.com/juniorfoo/charts/releases/download/ignition-8.3.0-beta3/ignition-8.3.0-beta3.tgz
-    version: 8.3.0-beta3
-  - apiVersion: v2
-    appVersion: 8.3.0-beta3
-    created: "2025-08-18T15:35:08.695988033Z"
-    description: Helm chart for running a scale-out version of Ignition 8.3 from Inductive
-      Automation.
-    digest: 9bd8bd51acf6c50f9e75eee1edde507aef6e3c5282a85499968274a56aa5d23b
+    digest: b9fb603de2aca42c7f8705c6e14c9786493b387685ecd3a242f23f2b5cfac1b0
     icon: https://docs.inductiveautomation.com/img/Logo-Ignition-Check.svg
     maintainers:
     - name: juniorfoo
@@ -71,6 +23,54 @@ entries:
     description: Helm chart for running a scale-out version of Ignition 8.3 from Inductive
       Automation.
     digest: 0834533f520eedcfb03ab509e67ed5a0126d6366109a458a6948925b4a8b2ef8
+    icon: https://docs.inductiveautomation.com/img/Logo-Ignition-Check.svg
+    maintainers:
+    - name: juniorfoo
+    name: ignition
+    sources:
+    - https://docs.inductiveautomation.com/docs/8.3/platform/docker-image
+    - https://github.com/juniorfoo/charts/
+    urls:
+    - https://github.com/juniorfoo/charts/releases/download/ignition-8.3.0-beta3/ignition-8.3.0-beta3.tgz
+    version: 8.3.0-beta3
+  - apiVersion: v2
+    appVersion: 8.3.0-beta3
+    created: "2025-08-19T19:34:38.172028871Z"
+    description: Helm chart for running a scale-out version of Ignition 8.3 from Inductive
+      Automation.
+    digest: 7f1b9541eeda2288400524834ec989ce5c213878fb107a9b9b85885e60c084cb
+    icon: https://docs.inductiveautomation.com/img/Logo-Ignition-Check.svg
+    maintainers:
+    - name: juniorfoo
+    name: ignition
+    sources:
+    - https://docs.inductiveautomation.com/docs/8.3/platform/docker-image
+    - https://github.com/juniorfoo/charts/
+    urls:
+    - https://github.com/juniorfoo/charts/releases/download/ignition-8.3.0-beta3/ignition-8.3.0-beta3.tgz
+    version: 8.3.0-beta3
+  - apiVersion: v2
+    appVersion: 8.3.0-beta3
+    created: "2025-08-19T19:43:03.134073919Z"
+    description: Helm chart for running a scale-out version of Ignition 8.3 from Inductive
+      Automation.
+    digest: 349056dd33e109237c6d865155137deff62ce3526c7afed6de3afb624b9fdc1c
+    icon: https://docs.inductiveautomation.com/img/Logo-Ignition-Check.svg
+    maintainers:
+    - name: juniorfoo
+    name: ignition
+    sources:
+    - https://docs.inductiveautomation.com/docs/8.3/platform/docker-image
+    - https://github.com/juniorfoo/charts/
+    urls:
+    - https://github.com/juniorfoo/charts/releases/download/ignition-8.3.0-beta3/ignition-8.3.0-beta3.tgz
+    version: 8.3.0-beta3
+  - apiVersion: v2
+    appVersion: 8.3.0-beta3
+    created: "2025-08-17T16:06:48.353925721Z"
+    description: Helm chart for running a scale-out version of Ignition 8.3 from Inductive
+      Automation.
+    digest: 174eedddd3a16c15d5c9b1a42e75b725c7cce8d11ee04f91b28d554e6ef1e8d1
     icon: https://docs.inductiveautomation.com/img/Logo-Ignition-Check.svg
     maintainers:
     - name: juniorfoo
@@ -163,10 +163,10 @@ entries:
     version: 8.3.0-beta3
   - apiVersion: v2
     appVersion: 8.3.0-beta3
-    created: "2025-08-18T15:36:13.725856961Z"
+    created: "2025-08-17T16:03:09.972594026Z"
     description: Helm chart for running a scale-out version of Ignition 8.3 from Inductive
       Automation.
-    digest: b9fb603de2aca42c7f8705c6e14c9786493b387685ecd3a242f23f2b5cfac1b0
+    digest: 1ff8de17bd5428aa70bb30b6b9b40b5f49711a7d5bc3ea50e6331a6fe35f5c4b
     icon: https://docs.inductiveautomation.com/img/Logo-Ignition-Check.svg
     maintainers:
     - name: juniorfoo
@@ -179,10 +179,10 @@ entries:
     version: 8.3.0-beta3
   - apiVersion: v2
     appVersion: 8.3.0-beta3
-    created: "2025-08-17T16:06:48.353925721Z"
+    created: "2025-08-19T19:51:13.032457041Z"
     description: Helm chart for running a scale-out version of Ignition 8.3 from Inductive
       Automation.
-    digest: 174eedddd3a16c15d5c9b1a42e75b725c7cce8d11ee04f91b28d554e6ef1e8d1
+    digest: d2cc024b2d7f939c0e41987c441b86278b89ef6af0ae671dade4374683ce4389
     icon: https://docs.inductiveautomation.com/img/Logo-Ignition-Check.svg
     maintainers:
     - name: juniorfoo
@@ -195,10 +195,10 @@ entries:
     version: 8.3.0-beta3
   - apiVersion: v2
     appVersion: 8.3.0-beta3
-    created: "2025-08-19T19:43:03.134073919Z"
+    created: "2025-08-18T15:35:08.695988033Z"
     description: Helm chart for running a scale-out version of Ignition 8.3 from Inductive
       Automation.
-    digest: 349056dd33e109237c6d865155137deff62ce3526c7afed6de3afb624b9fdc1c
+    digest: 9bd8bd51acf6c50f9e75eee1edde507aef6e3c5282a85499968274a56aa5d23b
     icon: https://docs.inductiveautomation.com/img/Logo-Ignition-Check.svg
     maintainers:
     - name: juniorfoo
@@ -274,6 +274,22 @@ entries:
     - https://github.com/juniorfoo/charts/releases/download/ignition-8.3.0-beta3/ignition-8.3.0-beta3.tgz
     version: 8.3.0-beta3
   - apiVersion: v2
+    appVersion: 8.3.0-beta3
+    created: "2025-08-19T20:52:18.377235877Z"
+    description: Helm chart for running a scale-out version of Ignition 8.3 from Inductive
+      Automation.
+    digest: 4e5427d26ab283cdbf701467c441c3f5367a9e8342d8a38944c6845a75e481be
+    icon: https://docs.inductiveautomation.com/img/Logo-Ignition-Check.svg
+    maintainers:
+    - name: juniorfoo
+    name: ignition
+    sources:
+    - https://docs.inductiveautomation.com/docs/8.3/platform/docker-image
+    - https://github.com/juniorfoo/charts/
+    urls:
+    - https://github.com/juniorfoo/charts/releases/download/ignition-8.3.0-beta3/ignition-8.3.0-beta3.tgz
+    version: 8.3.0-beta3
+  - apiVersion: v2
     appVersion: 8.1.49
     created: "2025-08-17T13:40:31.07706063Z"
     description: Helm chart for running a scale-out version of Ignition 8.1 from Inductive
@@ -321,4 +337,4 @@ entries:
     urls:
     - https://github.com/juniorfoo/charts/releases/download/ignition-8.1/ignition-8.1.tgz
     version: "8.1"
-generated: "2025-08-19T20:15:05.691900917Z"
+generated: "2025-08-19T20:52:18.377491956Z"
