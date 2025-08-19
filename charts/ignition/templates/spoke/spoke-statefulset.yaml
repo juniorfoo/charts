@@ -5,7 +5,17 @@
         - $i is the index of the spoke we are working on
         - $s is the spoke we are working on
     */}}
-    {{ $data := dict "root" $ "context" $s "spec" $.Values.spokeSpec }}
+
+    {{ $data := dict 
+        "root" $ 
+        "context" $s 
+        "spec" $.Values.spokeSpec 
+        "ganEnv" (list 
+            (dict "name" "GATEWAY_NETWORK_0_HOST" "value" (printf "ignition-%s-0.ignition-%s" $.Values.hub.name $.Values.hub.name))
+            (dict "name" "GATEWAY_NETWORK_1_HOST" "value" (printf "ignition-%s-1.ignition-%s" $.Values.hub.name $.Values.hub.name))
+        )
+    }}
+
     {{- include "ignition.shared.statefulset" $data }}
 ---
 {{- end }}

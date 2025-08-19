@@ -24,7 +24,7 @@ disableQuickstart: false
 
 ## Ignition edition (standard, edge, or maker)
 ## 
-edition: maker
+edition: standard
 
 ## If true, Ignition instance(s) will be created
 ##

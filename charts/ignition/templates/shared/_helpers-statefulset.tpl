@@ -259,6 +259,9 @@ spec:
             {{- if $.spec.extraEnv }}
             {{- toYaml $.spec.extraEnv | nindent 12 }}
             {{- end }}
+            {{- if $.ganEnv }}
+            {{- toYaml $.ganEnv | nindent 12 }}
+            {{- end }}
           args:
             - -n{{ camelcase $.context.name }}
             - -m{{ $.spec.memory.max | default 512 }}
