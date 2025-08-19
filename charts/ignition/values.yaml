@@ -204,7 +204,9 @@ service:
   ## List of IP addresses at which the Ignition service is available
   ## Ref: https://kubernetes.io/docs/user-guide/services/#external-ips
   ##
-  externalIPs: []
+  externalIps: []
+  # https://kube-vip.io/docs/usage/kubernetes-services/#using-dhcp-for-load-balancers-experimental-kube-vip-v021
+  externalIp: ""
 
   ## Loadbalancer IP
   ## Only use if service.type is "LoadBalancer"

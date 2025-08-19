@@ -35,9 +35,12 @@ spec:
 {{- if $.root.Values.service.clusterIP }}
   clusterIP: {{ $.root.Values.service.clusterIP }}
 {{- end }}
-{{- if $.root.Values.service.externalIPs }}
+{{- if $.root.Values.service.externalIps }}
   externalIPs:
-{{ toYaml $.root.Values.service.externalIPs | indent 4 }}
+{{ toYaml $.root.Values.service.externalIps | indent 4 }}
+{{- end }}
+{{- if $.root.Values.service.externalIp }}
+  externalIp: {{ $.root.Values.service.externalIp }}
 {{- end }}
 {{- if $.root.Values.service.loadBalancerIP }}
   loadBalancerIP: {{ $.root.Values.service.loadBalancerIP }}
