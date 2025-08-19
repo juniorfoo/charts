@@ -3,10 +3,10 @@ entries:
   ignition:
   - apiVersion: v2
     appVersion: 8.3.0-beta3
-    created: "2025-08-17T14:16:51.624403818Z"
+    created: "2025-08-17T13:55:01.556401155Z"
     description: Helm chart for running a scale-out version of Ignition 8.3 from Inductive
       Automation.
-    digest: c244492d5ff60383c3d9f3b63cfa4d76bf30540864d3ce1d2e8ac5b3d412bc20
+    digest: aacfbb47278a9141f87e7833bebe0cd82a8897c5f3f2d8e5005b4cd25e812959
     icon: https://docs.inductiveautomation.com/img/Logo-Ignition-Check.svg
     maintainers:
     - name: juniorfoo
@@ -19,10 +19,10 @@ entries:
     version: 8.3.0-beta3
   - apiVersion: v2
     appVersion: 8.3.0-beta3
-    created: "2025-08-19T19:32:12.112747789Z"
+    created: "2025-08-18T14:59:01.53011516Z"
     description: Helm chart for running a scale-out version of Ignition 8.3 from Inductive
       Automation.
-    digest: bf4832605f4fd6305c25cd4dec249fc1b54507e8ec272f9f3005780469e09b60
+    digest: 9a1fb7e97c5af8a103414b792eece48a194b0adae258c6dda9c5d8f6b498137f
     icon: https://docs.inductiveautomation.com/img/Logo-Ignition-Check.svg
     maintainers:
     - name: juniorfoo
@@ -67,10 +67,10 @@ entries:
     version: 8.3.0-beta3
   - apiVersion: v2
     appVersion: 8.3.0-beta3
-    created: "2025-08-17T16:11:33.424203946Z"
+    created: "2025-08-17T14:16:51.624403818Z"
     description: Helm chart for running a scale-out version of Ignition 8.3 from Inductive
       Automation.
-    digest: d6344426406b2cc30d661b30d1b2a01d55ff05fe0cad31177f1bfaa4e52fcf9c
+    digest: c244492d5ff60383c3d9f3b63cfa4d76bf30540864d3ce1d2e8ac5b3d412bc20
     icon: https://docs.inductiveautomation.com/img/Logo-Ignition-Check.svg
     maintainers:
     - name: juniorfoo
@@ -99,10 +99,10 @@ entries:
     version: 8.3.0-beta3
   - apiVersion: v2
     appVersion: 8.3.0-beta3
-    created: "2025-08-18T14:59:01.53011516Z"
+    created: "2025-08-19T19:32:12.112747789Z"
     description: Helm chart for running a scale-out version of Ignition 8.3 from Inductive
       Automation.
-    digest: 9a1fb7e97c5af8a103414b792eece48a194b0adae258c6dda9c5d8f6b498137f
+    digest: bf4832605f4fd6305c25cd4dec249fc1b54507e8ec272f9f3005780469e09b60
     icon: https://docs.inductiveautomation.com/img/Logo-Ignition-Check.svg
     maintainers:
     - name: juniorfoo
@@ -131,10 +131,10 @@ entries:
     version: 8.3.0-beta3
   - apiVersion: v2
     appVersion: 8.3.0-beta3
-    created: "2025-08-17T13:55:01.556401155Z"
+    created: "2025-08-17T16:11:33.424203946Z"
     description: Helm chart for running a scale-out version of Ignition 8.3 from Inductive
       Automation.
-    digest: aacfbb47278a9141f87e7833bebe0cd82a8897c5f3f2d8e5005b4cd25e812959
+    digest: d6344426406b2cc30d661b30d1b2a01d55ff05fe0cad31177f1bfaa4e52fcf9c
     icon: https://docs.inductiveautomation.com/img/Logo-Ignition-Check.svg
     maintainers:
     - name: juniorfoo
@@ -194,6 +194,22 @@ entries:
     - https://github.com/juniorfoo/charts/releases/download/ignition-8.3.0-beta3/ignition-8.3.0-beta3.tgz
     version: 8.3.0-beta3
   - apiVersion: v2
+    appVersion: 8.3.0-beta3
+    created: "2025-08-19T19:43:03.134073919Z"
+    description: Helm chart for running a scale-out version of Ignition 8.3 from Inductive
+      Automation.
+    digest: 349056dd33e109237c6d865155137deff62ce3526c7afed6de3afb624b9fdc1c
+    icon: https://docs.inductiveautomation.com/img/Logo-Ignition-Check.svg
+    maintainers:
+    - name: juniorfoo
+    name: ignition
+    sources:
+    - https://docs.inductiveautomation.com/docs/8.3/platform/docker-image
+    - https://github.com/juniorfoo/charts/
+    urls:
+    - https://github.com/juniorfoo/charts/releases/download/ignition-8.3.0-beta3/ignition-8.3.0-beta3.tgz
+    version: 8.3.0-beta3
+  - apiVersion: v2
     appVersion: 8.1.49
     created: "2025-08-17T13:40:31.07706063Z"
     description: Helm chart for running a scale-out version of Ignition 8.1 from Inductive
@@ -241,4 +257,4 @@ entries:
     urls:
     - https://github.com/juniorfoo/charts/releases/download/ignition-8.1/ignition-8.1.tgz
     version: "8.1"
-generated: "2025-08-19T19:34:38.172158292Z"
+generated: "2025-08-19T19:43:03.13423948Z"
