@@ -3,10 +3,10 @@ entries:
   ignition:
   - apiVersion: v2
     appVersion: 8.3.0-beta3
-    created: "2025-08-17T13:55:01.556401155Z"
+    created: "2025-08-18T14:59:01.53011516Z"
     description: Helm chart for running a scale-out version of Ignition 8.3 from Inductive
       Automation.
-    digest: aacfbb47278a9141f87e7833bebe0cd82a8897c5f3f2d8e5005b4cd25e812959
+    digest: 9a1fb7e97c5af8a103414b792eece48a194b0adae258c6dda9c5d8f6b498137f
     icon: https://docs.inductiveautomation.com/img/Logo-Ignition-Check.svg
     maintainers:
     - name: juniorfoo
@@ -99,10 +99,10 @@ entries:
     version: 8.3.0-beta3
   - apiVersion: v2
     appVersion: 8.3.0-beta3
-    created: "2025-08-18T14:59:01.53011516Z"
+    created: "2025-08-17T13:55:01.556401155Z"
     description: Helm chart for running a scale-out version of Ignition 8.3 from Inductive
       Automation.
-    digest: 9a1fb7e97c5af8a103414b792eece48a194b0adae258c6dda9c5d8f6b498137f
+    digest: aacfbb47278a9141f87e7833bebe0cd82a8897c5f3f2d8e5005b4cd25e812959
     icon: https://docs.inductiveautomation.com/img/Logo-Ignition-Check.svg
     maintainers:
     - name: juniorfoo
@@ -135,6 +135,22 @@ entries:
     description: Helm chart for running a scale-out version of Ignition 8.3 from Inductive
       Automation.
     digest: b9fb603de2aca42c7f8705c6e14c9786493b387685ecd3a242f23f2b5cfac1b0
+    icon: https://docs.inductiveautomation.com/img/Logo-Ignition-Check.svg
+    maintainers:
+    - name: juniorfoo
+    name: ignition
+    sources:
+    - https://docs.inductiveautomation.com/docs/8.3/platform/docker-image
+    - https://github.com/juniorfoo/charts/
+    urls:
+    - https://github.com/juniorfoo/charts/releases/download/ignition-8.3.0-beta3/ignition-8.3.0-beta3.tgz
+    version: 8.3.0-beta3
+  - apiVersion: v2
+    appVersion: 8.3.0-beta3
+    created: "2025-08-19T18:46:56.298055403Z"
+    description: Helm chart for running a scale-out version of Ignition 8.3 from Inductive
+      Automation.
+    digest: 0834533f520eedcfb03ab509e67ed5a0126d6366109a458a6948925b4a8b2ef8
     icon: https://docs.inductiveautomation.com/img/Logo-Ignition-Check.svg
     maintainers:
     - name: juniorfoo
@@ -193,4 +209,4 @@ entries:
     urls:
     - https://github.com/juniorfoo/charts/releases/download/ignition-8.1/ignition-8.1.tgz
     version: "8.1"
-generated: "2025-08-18T15:36:13.725925168Z"
+generated: "2025-08-19T18:46:56.298186608Z"
