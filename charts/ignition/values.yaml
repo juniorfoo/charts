@@ -560,14 +560,19 @@ spokeSpec:
   ## See comments in hubSpec. By default spoke(s) only get data from devices so most things are off
   ##
   modules:
-    - perspective
-    - allen-bradley-drivers
-    - bacnet-driver
-    - dnp3-driver
-    - iec-61850-driver
-    - logix-driver
-    - modbus-driver-v2
-    - omron-driver
-    - opc-ua
-    - siemens-drivers
-    - udp-tcp-drivers
+    - com.inductiveautomation.dnp3
+    - com.inductiveautomation.iec61850
+    - com.inductiveautomation.logix
+    - com.inductiveautomation.modbus
+    - com.inductiveautomation.omron
+    - com.inductiveautomation.opcua
+    - com.inductiveautomation.opcua.drivers.ablegacy
+    - com.inductiveautomation.opcua.drivers.bacnet
+    - com.inductiveautomation.opcua.drivers.dnp3v2
+    - com.inductiveautomation.opcua.drivers.micro800
+    - com.inductiveautomation.opcua.drivers.mitsubishi
+    - com.inductiveautomation.opcua.drivers.siemens-symbolic
+    - com.inductiveautomation.perspective
+    - com.inductiveautomation.siemens
+    - com.inductiveautomation.udp
+    - com.inductiveautomation.vision
