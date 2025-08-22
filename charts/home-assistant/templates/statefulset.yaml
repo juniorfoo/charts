@@ -62,7 +62,7 @@ spec:
                 fi
               fi
           volumeMounts:
-            - name: config
+            - name: storage
               mountPath: /config
       containers:
         - name: {{ .Chart.Name }}
