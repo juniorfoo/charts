@@ -1,4 +1,6 @@
 # Default values for home-assistant.
+# Inspiration from:
+# - https://blog.warrenamphlett.co.uk/homelab/home-assistant-in-kubernetes
 
 affinity: {}
 
@@ -81,12 +83,26 @@ podSecurityContext: {}
 # This is for setting up a service.
 # More info: https://kubernetes.io/docs/concepts/services-networking/service/
 service:
+  # IP address to use
+  # - Empty means that an IP address will be assigned from the pool
+  # - None means that an IP will not be assigned    
+  clusterIP: ""
+  # List of IP addresses at which the Ignition service is available
+  # Ref: https://kubernetes.io/docs/user-guide/services/#external-ips
+  externalIps: []
+  # Denotes if this Service desires to route external traffic to node-local or cluster-wide 
+  # endpoints
+  externalTrafficPolicy: Cluster
+  # Loadbalancer IP
+  # Only use if service.type is "LoadBalancer"
+  loadBalancerIP: ""
+  loadBalancerSourceRanges: []
   # This sets the ports.
   # More info: https://kubernetes.io/docs/concepts/services-networking/service/#field-spec-ports
   port: 8123
   # This sets the service type.
   # More info: https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types
-  type: ClusterIP
+  type: LoadBalancer
 
 # This section builds out the service account.
 # More info: https://kubernetes.io/docs/concepts/security/service-accounts/
