@@ -1,6 +1,9 @@
 # Default values for home-assistant.
 # Inspiration from:
 # - https://blog.warrenamphlett.co.uk/homelab/home-assistant-in-kubernetes
+# - https://drpump.github.io/home-assistant-k3s/
+# - https://balagetech.com/running-home-assistant-on-kubernetes/
+# - https://github.com/abalage/home-assistant-k8s/blob/main/base/deployment.yml
 
 affinity: {}
 
