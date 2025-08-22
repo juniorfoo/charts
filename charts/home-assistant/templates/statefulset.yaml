@@ -60,12 +60,8 @@ spec:
               # The above block of code is indented like this due to the error:
               # /bin/sh: syntax error: unexpected end of file (expecting "fi")
               else
-                if ! yq e '.http.use_x_forwarded_for' /config/configuration.yaml > /dev/null 2>&1; then
-                  echo "Configuration exists - but does not include use_x_forwarded_for"
-                  yq e '.http = {"use_x_forwarded_for": true, "trusted_proxies": ["10.42.0.0/16"]}' -i /config/configuration.yaml
-                else
-                  echo "Configuration exists - and includes use_x_forwarded_for"
-                fi
+                echo "Ensuring http section is present and correct"
+                yq e '.http = {"use_x_forwarded_for": true, "trusted_proxies": ["10.42.0.0/16"]}' -i /config/configuration.yaml              
               fi
 
               echo "Current configuration:"
