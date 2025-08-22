@@ -40,22 +40,24 @@ spec:
             - |
               if [ ! -f /config/configuration.yaml ]; then
                 cat > /config/configuration.yaml << 'EOF'
-                # Loads default set of integrations. Do not remove.
-                default_config:
-                
-                # Load frontend themes from the themes folder
-                frontend:
-                  themes: !include_dir_merge_named themes
-                
-                automation: !include automations.yaml
-                script: !include scripts.yaml
-                scene: !include scenes.yaml
-                
-                http:
-                  use_x_forwarded_for: true
-                  trusted_proxies:
-                    - 10.42.0.0/16
-                EOF
+              # Loads default set of integrations. Do not remove.
+              default_config:
+              
+              # Load frontend themes from the themes folder
+              frontend:
+                themes: !include_dir_merge_named themes
+              
+              automation: !include automations.yaml
+              script: !include scripts.yaml
+              scene: !include scenes.yaml
+              
+              http:
+                use_x_forwarded_for: true
+                trusted_proxies:
+                  - 10.42.0.0/16
+              EOF
+              # The above block of code is indented like this due to the error:
+              # /bin/sh: syntax error: unexpected end of file (expecting "fi")
               else
                 if ! yq e '.http.use_x_forwarded_for' /config/configuration.yaml > /dev/null 2>&1; then
                   yq e '.http = {"use_x_forwarded_for": true, "trusted_proxies": ["10.42.0.0/16"]}' -i /config/configuration.yaml
