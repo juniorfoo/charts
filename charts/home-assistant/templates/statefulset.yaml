@@ -63,6 +63,7 @@ spec:
                   yq e '.http = {"use_x_forwarded_for": true, "trusted_proxies": ["10.42.0.0/16"]}' -i /config/configuration.yaml
                 fi
               fi
+              cat /config/configuration.yaml
           volumeMounts:
             - name: storage
               mountPath: /config
