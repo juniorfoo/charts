@@ -39,6 +39,7 @@ spec:
             - -c
             - |
               if [ ! -f /config/configuration.yaml ]; then
+                echo "Configuration does not exist - creating with use_x_forwarded_for"
                 cat > /config/configuration.yaml << 'EOF'
               # Loads default set of integrations. Do not remove.
               default_config:
@@ -60,9 +61,14 @@ spec:
               # /bin/sh: syntax error: unexpected end of file (expecting "fi")
               else
                 if ! yq e '.http.use_x_forwarded_for' /config/configuration.yaml > /dev/null 2>&1; then
+                  echo "Configuration exists - but does not include use_x_forwarded_for"
                   yq e '.http = {"use_x_forwarded_for": true, "trusted_proxies": ["10.42.0.0/16"]}' -i /config/configuration.yaml
+                else
+                  echo "Configuration exists - and includes use_x_forwarded_for"
                 fi
               fi
+
+              echo "Current configuration:"
               cat /config/configuration.yaml
           volumeMounts:
             - name: storage
